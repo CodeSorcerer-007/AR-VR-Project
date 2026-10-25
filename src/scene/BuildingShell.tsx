@@ -504,12 +504,10 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
 }) => {
   const isGround = flIdx === 0;
   const annWinZ = [-4, 4, 12, 20, 28, 36];
-  const annFrontX = [35, 39, 43, 47, 51];
   const annRearX = [35, 39, 43, 47, 51];
 
   // Split-AC outdoor units mounted on exterior walls of upper floors
   const annAcZ = !isGround ? [4, 16, 28] : [];
-  const annFrontAcX = !isGround ? [37, 41, 49] : [];
   const annDownspoutsZ = [0, 16, 32];
 
   const annPatches = isGround ? [...ANNEXURE_PERMANENT_PATCHES, ...ANNEXURE_STAIR_PATCHES] : ANNEXURE_PERMANENT_PATCHES;
@@ -535,9 +533,21 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
         );
       })}
 
-      {/* Decorative Cantilever Blue Edge along Front */}
-      <mesh position={[ANN_CX, -0.15, ANN_Z0 - 0.04]} material={materials.sunshadeNavyBlue}>
-        <boxGeometry args={[20.2, 0.12, 0.08]} />
+      {/* ── CONTINUOUS ARCHITECTURAL CANTILEVER CHAJJA SLAB WITH NAVY BLUE FASCIA (Photos 9.28.50 PM (1) & (2)) ── */}
+      {/* Concrete cantilever projecting slab extending 0.65m forward across entire front facade */}
+      <mesh position={[ANN_CX, -0.1, ANN_Z0 - 0.325]} material={materials.exteriorWall} castShadow receiveShadow>
+        <boxGeometry args={[20.5, 0.20, 0.65]} />
+      </mesh>
+      {/* Continuous deep navy blue front edge trim */}
+      <mesh position={[ANN_CX, -0.1, ANN_Z0 - 0.66]} material={materials.sunshadeNavyBlue}>
+        <boxGeometry args={[20.54, 0.20, 0.04]} />
+      </mesh>
+      {/* West and East side blue return caps */}
+      <mesh position={[ANN_X0 - 0.26, -0.1, ANN_Z0 - 0.325]} material={materials.sunshadeNavyBlue}>
+        <boxGeometry args={[0.04, 0.20, 0.67]} />
+      </mesh>
+      <mesh position={[ANN_X1 + 0.26, -0.1, ANN_Z0 - 0.325]} material={materials.sunshadeNavyBlue}>
+        <boxGeometry args={[0.04, 0.20, 0.67]} />
       </mesh>
 
       {/* ── Segmented Ceiling Slabs (Stairwell and Light Court Open) ─ */}
@@ -553,29 +563,93 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
         );
       })}
 
-      {/* Front facade (Z = -8) */}
-      <Wall pos={[ANN_CX, ROOM_H / 2, ANN_Z0 + WALL_T / 2]}
-            size={[20, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
+      {/* ── ANNEXURE FRONT FACADE (Z = -8, Photos 9.28.50 PM (1) & (2)) ── */}
+      {/* 1. OUTER / LEFT SOLID GREY WALL (X: 39.5 → 53.0) — Monolithic smooth architectural concrete finish */}
+      <Wall
+        pos={[46.25, ROOM_H / 2, ANN_Z0 + WALL_T / 2]}
+        size={[13.5, ROOM_H, WALL_T]}
+        mat={materials.exteriorWall}
+      />
 
-      {annFrontX.map((wx) => (
-        <WindowFixture
-          key={'af-fw-' + wx}
-          pos={[wx, WIN_CY, ANN_Z0]}
-          facing="south"
-          materials={materials}
-          grillTex={grillTex}
-        />
-      ))}
+      {/* 2. INNER / RIGHT VERANDA CORNER BAY (X: 33.0 → 39.5, facing alleyway/Main Block) */}
+      {/* Structural Corner Column at X = 33.25 */}
+      <mesh position={[33.25, ROOM_H / 2, ANN_Z0 + WALL_T / 2]} material={materials.exteriorWall} castShadow receiveShadow>
+        <boxGeometry args={[0.5, ROOM_H, WALL_T + 0.1]} />
+      </mesh>
 
-      {/* Annexure Front Facade Split-AC Units */}
-      {annFrontAcX.map((ax) => (
-        <ACOutdoorUnit
-          key={`af-fac-${ax}`}
-          pos={[ax, 2.5, ANN_Z0]}
-          facing="south"
-          materials={materials}
-        />
-      ))}
+      {/* Structural Pier at X = 39.3 */}
+      <mesh position={[39.3, ROOM_H / 2, ANN_Z0 + WALL_T / 2]} material={materials.exteriorWall} castShadow receiveShadow>
+        <boxGeometry args={[0.4, ROOM_H, WALL_T]} />
+      </mesh>
+
+      {isGround ? (
+        /* Ground Floor: Covered Entrance Porch & Plinth (Photo 2) */
+        <group>
+          {/* Right half service wall with window */}
+          <Wall
+            pos={[37.6, ROOM_H / 2, ANN_Z0 + WALL_T / 2]}
+            size={[3.0, ROOM_H, WALL_T]}
+            mat={materials.exteriorWall}
+          />
+          <WindowFixture
+            pos={[37.6, WIN_CY, ANN_Z0]}
+            facing="south"
+            materials={materials}
+            grillTex={grillTex}
+          />
+          {/* Left half open entrance portal with top lintel */}
+          <Wall
+            pos={[34.8, ROOM_H - 0.4, ANN_Z0 + WALL_T / 2]}
+            size={[2.6, 0.8, WALL_T]}
+            mat={materials.exteriorWall}
+          />
+          {/* Raised Entrance Plinth Steps in front */}
+          <mesh position={[34.8, 0.08, ANN_Z0 - 0.5]} material={materials.interiorFloorTile} receiveShadow>
+            <boxGeometry args={[2.8, 0.16, 1.0]} />
+          </mesh>
+          <mesh position={[34.8, 0.165, ANN_Z0 - 0.05]} material={materials.skirtingBlack}>
+            <boxGeometry args={[2.82, 0.02, 0.06]} />
+          </mesh>
+        </group>
+      ) : (
+        /* Upper Floors (1F, 2F, 3F): Open-Air Recessed Veranda Balconies (Photo 1 & 2) */
+        <group>
+          {/* Bottom Solid Parapet Wall (Y = 0 to 1.1m) */}
+          <Wall
+            pos={[36.3, 0.55, ANN_Z0 + WALL_T / 2]}
+            size={[5.6, 1.1, WALL_T]}
+            mat={materials.exteriorWall}
+          />
+          {/* Parapet Coping Ledge in Deep Navy Blue */}
+          <mesh position={[36.3, 1.12, ANN_Z0 + WALL_T / 2]} material={materials.sunshadeNavyBlue}>
+            <boxGeometry args={[5.64, 0.05, WALL_T + 0.06]} />
+          </mesh>
+
+          {/* Stainless steel interior guardrail */}
+          <mesh position={[36.3, 0.95, ANN_Z0 + 0.12]} material={materials.railingSteel}>
+            <boxGeometry args={[5.55, 0.05, 0.05]} />
+          </mesh>
+
+          {/* Top Lintel Beam (Y = 3.2 to 3.5m) */}
+          <Wall
+            pos={[36.3, 3.35, ANN_Z0 + WALL_T / 2]}
+            size={[5.6, 0.3, WALL_T]}
+            mat={materials.exteriorWall}
+          />
+
+          {/* Ceiling LED strip light inside veranda */}
+          <mesh position={[36.3, CEIL_H - 0.05, -5.5]} material={materials.ledTubeLight}>
+            <boxGeometry args={[2.4, 0.04, 0.08]} />
+          </mesh>
+
+          {/* On 1F: Stainless steel water cooler unit against wall (Photo 2) */}
+          {flIdx === 1 && (
+            <mesh position={[38.9, 1.2, -6.5]} material={materials.waterCoolerSteel} castShadow>
+              <boxGeometry args={[0.35, 0.7, 0.35]} />
+            </mesh>
+          )}
+        </group>
+      )}
 
       {/* Continuous cornice bands for Annexure */}
       <Wall pos={[ANN_CX, ROOM_H + 0.15, ANN_Z0 - 0.02]}
@@ -1199,16 +1273,34 @@ export const BuildingShell: React.FC = () => {
         );
       })}
 
-      {/* ── Annexure Roof Slab & Parapet (Y = 20) ────────────────── */}
+      {/* ── Annexure Roof Slab & Parapet (Y = 20, Photo 1 Overhang) ────────────────── */}
       <group position={[0, explodedView ? 20 * 1.75 : 20, 0]}>
         <mesh position={[ANN_CX, 0.2, 18]} material={materials.roofSlab} receiveShadow>
           <boxGeometry args={[20, 0.4, 52]} />
         </mesh>
+        {/* Projecting Roof Canopy Slab Overhang with Navy Blue Fascia (Photo 1) */}
+        <mesh position={[ANN_CX, 0.2, ANN_Z0 - 0.4]} material={materials.roofSlab} receiveShadow>
+          <boxGeometry args={[20.6, 0.25, 0.8]} />
+        </mesh>
+        <mesh position={[ANN_CX, 0.2, ANN_Z0 - 0.81]} material={materials.sunshadeNavyBlue}>
+          <boxGeometry args={[20.64, 0.25, 0.04]} />
+        </mesh>
+        <mesh position={[ANN_X0 - 0.31, 0.2, ANN_Z0 - 0.4]} material={materials.sunshadeNavyBlue}>
+          <boxGeometry args={[0.04, 0.25, 0.82]} />
+        </mesh>
+        <mesh position={[ANN_X1 + 0.31, 0.2, ANN_Z0 - 0.4]} material={materials.sunshadeNavyBlue}>
+          <boxGeometry args={[0.04, 0.25, 0.82]} />
+        </mesh>
+
         <Wall pos={[ANN_CX, 0.7, ANN_Z0 - WALL_T / 2]} size={[20, 1.4, WALL_T]} mat={materials.exteriorWall} />
         <Wall pos={[ANN_CX, 0.7, ANN_Z1 + WALL_T / 2]} size={[20, 1.4, WALL_T]} mat={materials.exteriorWall} />
         <Wall pos={[ANN_X0 - WALL_T / 2, 0.7, 18]} size={[WALL_T, 1.4, 52]} mat={materials.exteriorWall} />
         <Wall pos={[ANN_X1 + WALL_T / 2, 0.7, 18]} size={[WALL_T, 1.4, 52]} mat={materials.exteriorWall} />
         <Wall pos={[ANN_CX, 1.15, ANN_Z0 - WALL_T - 0.06]} size={[20.2, 0.8, 0.12]} mat={materials.corniceBronze} />
+        {/* Parapet top navy blue trim */}
+        <mesh position={[ANN_CX, 1.56, ANN_Z0 - WALL_T - 0.06]} material={materials.sunshadeNavyBlue}>
+          <boxGeometry args={[20.35, 0.06, 0.18]} />
+        </mesh>
         {/* Annexure Central Light Court Opening Curb */}
         <group position={[ANN_CX, 0.4, 19]}>
           <Wall pos={[0, 0.5, -6]} size={[3.4, 1.0, 0.2]} mat={materials.exteriorWall} />

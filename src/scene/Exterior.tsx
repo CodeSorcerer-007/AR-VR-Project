@@ -126,27 +126,29 @@ export const Exterior: React.FC = () => {
       </mesh>
 
       {/* ── 5. Landscaped Lawn Islands (matching reference photos) ── */}
-      {/* West Island — in front of Annexure Block (X = +43) */}
-      <group position={[43, 0.05, -13]}>
+      {/* West Island — in front of Annexure Block solid wall (Photos 9.28.50 PM (1) & (2)) */}
+      <group position={[45, 0.05, -12.5]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} material={materials.lawnGrass} receiveShadow>
-          <planeGeometry args={[18, 6]} />
+          <planeGeometry args={[15, 6.5]} />
         </mesh>
-        {/* Black & white kerb edge */}
-        <mesh position={[0, 0.09, 3]} material={materials.curbStriped}>
-          <boxGeometry args={[18.2, 0.18, 0.22]} />
+        {/* Navy blue & light grey striped curb edge (Photo 1) */}
+        <mesh position={[0, 0.14, 3.25]} material={materials.curbStriped}>
+          <boxGeometry args={[15.2, 0.28, 0.24]} />
         </mesh>
-        <mesh position={[0, 0.09, -3]} material={materials.curbStriped}>
-          <boxGeometry args={[18.2, 0.18, 0.22]} />
+        <mesh position={[0, 0.14, -3.25]} material={materials.curbStriped}>
+          <boxGeometry args={[15.2, 0.28, 0.24]} />
         </mesh>
-        <mesh position={[-9, 0.09, 0]} material={materials.curbStriped}>
-          <boxGeometry args={[0.22, 0.18, 6]} />
+        <mesh position={[-7.5, 0.14, 0]} material={materials.curbStriped}>
+          <boxGeometry args={[0.24, 0.28, 6.5]} />
         </mesh>
-        <mesh position={[9, 0.09, 0]} material={materials.curbStriped}>
-          <boxGeometry args={[0.22, 0.18, 6]} />
+        <mesh position={[7.5, 0.14, 0]} material={materials.curbStriped}>
+          <boxGeometry args={[0.24, 0.28, 6.5]} />
         </mesh>
-        {/* Ornamental Trees */}
-        <CampusTree pos={[-5, 0, 0]} scale={1.1} />
-        <CampusTree pos={[4, 0, 0.5]} scale={0.9} />
+        {/* Slender sapling trees with support stakes as seen in Photo 1 */}
+        <CampusTree pos={[-5.2, 0, 0.4]} scale={0.85} />
+        <CampusTree pos={[-1.8, 0, -0.3]} scale={0.9} />
+        <CampusTree pos={[1.8, 0, 0.3]} scale={0.8} />
+        <CampusTree pos={[5.2, 0, -0.2]} scale={0.85} />
       </group>
 
       {/* East Island — in front of Main Outer Wing (X = -12) */}

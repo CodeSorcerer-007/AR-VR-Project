@@ -203,16 +203,16 @@ function createAsphaltTexture(): THREE.CanvasTexture {
   return texture;
 }
 
-// Procedural Canvas Texture for Black & White Striped Curb
+// Procedural Canvas Texture for Realistic Navy Blue & Light Grey Striped Curb (Photos 9.28.50 PM (1) & (2))
 export function createCurbTexture(): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = 128;
   canvas.height = 32;
   const ctx = canvas.getContext('2d')!;
 
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#1e3a8a'; // Deep navy blue stripe
   ctx.fillRect(0, 0, 64, 32);
-  ctx.fillStyle = '#1e232a';
+  ctx.fillStyle = '#cbd5e1'; // Light concrete grey stripe
   ctx.fillRect(64, 0, 64, 32);
 
   const texture = new THREE.CanvasTexture(canvas);
