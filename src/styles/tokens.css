@@ -1,0 +1,74 @@
+:root {
+  /* Architectural Dark Theme Palette */
+  --bg-primary: #07090e;
+  --bg-secondary: #0d121d;
+  --bg-surface: rgba(15, 23, 42, 0.75);
+  --bg-surface-elevated: rgba(26, 38, 64, 0.85);
+  --bg-surface-glass: rgba(10, 15, 29, 0.65);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(56, 189, 248, 0.45);
+  --border-glass: rgba(255, 255, 255, 0.12);
+
+  /* Brand & Architectural Accents */
+  --brand-cyan: #38bdf8;
+  --brand-cyan-glow: rgba(56, 189, 248, 0.3);
+  --brand-terracotta: #c25e3e;
+  --brand-amber: #f59e0b;
+  --brand-emerald: #10b981;
+  --brand-crimson: #ef4444;
+
+  /* Typography */
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-accent: #38bdf8;
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Backdrop blur */
+  --blur-glass: blur(16px);
+  --hud-opacity: 0.88;
+}
+
+/* High Contrast Mode Override */
+[data-high-contrast="true"] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-surface: #111111;
+  --bg-surface-elevated: #222222;
+  --border-subtle: #ffffff;
+  --border-focus: #00ffff;
+  --border-glass: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #eeeeee;
+  --text-muted: #cccccc;
+  --text-accent: #00ffff;
+  --brand-cyan: #00ffff;
+  --brand-amber: #ffff00;
+  --blur-glass: none;
+}
