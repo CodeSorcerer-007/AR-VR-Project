@@ -140,10 +140,10 @@ export const WalkController: React.FC = () => {
     // --- CONTINUOUS BIDIRECTIONAL STAIRCASE PHYSICS ---
     // West Staircase (Main Block southwest corner): X ~ -15, Z in [0.4, 5.3]
     // East Staircase (Main Block southeast corner): X ~ +15, Z in [0.4, 5.3]
-    // Annexure Staircase (Annexure Block west corridor): X ~ -45, Z in [0.4, 5.3]
+    // Annexure Staircase (Annexure Block west corridor): X ~ +45, Z in [0.4, 5.3]
     const inWestStair = Math.abs(nextX - (-15)) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
     const inEastStair = Math.abs(nextX - 15) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
-    const inAnnexStair = Math.abs(nextX - (-45)) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
+    const inAnnexStair = Math.abs(nextX - 45) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
     const onAnyStair = inWestStair || inEastStair || inAnnexStair;
 
     if (onAnyStair) {
@@ -181,8 +181,8 @@ export const WalkController: React.FC = () => {
       nextY = THREE.MathUtils.damp(pos.current.y, floorTargetY, 14, delta);
     }
 
-    // --- GAP BETWEEN MAIN BLOCK & ANNEXURE BLOCK (X in [-32.95, -21.05]) ---
-    const inBlockGap = nextX > -32.95 && nextX < -21.05;
+    // --- GAP BETWEEN MAIN BLOCK & ANNEXURE BLOCK (X in [21.05, 32.95]) ---
+    const inBlockGap = nextX > 21.05 && nextX < 32.95;
     if (inBlockGap) {
       if (pos.current.y < 3.0) {
         // Ground level: open landscaped passage / driveway outdoors between blocks — fully permitted!

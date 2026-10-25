@@ -7,17 +7,17 @@ import { CampusMaterials } from './materials';
 // ARCHITECTURAL SPECIFICATIONS & COORDINATE SYSTEM
 // Campus Horizontally Aligned:
 //   Facing facade from road looking North (+Z):
-//   - Annexure Block:  X: -53 → -33 m, Z: -8 → 44 m, Height: 4 floors x 4.0 m
-//   - Alleyway/Bridge: X: -33 → -21 m, Z: 0 → 3 m (Open driveway underneath)
 //   - Main Block:      X: -21 → +21 m, Z: -8 → 40 m, Height: 4 floors x 4.0 m
 //   - Main Entrance:   Centered at X = 0, Z = -8
+//   - Alleyway/Bridge: X: 21 → 33 m, Z: 0 → 3 m (Open driveway underneath)
+//   - Annexure Block:  X: 33 → 53 m, Z: -8 → 44 m, Height: 4 floors x 4.0 m (Left in front/screen view)
 //
 // Corridor System:
 //   - Main Front Corridor: Z: -2 → 2.5 m (4.5 m wide, grand spine)
-//   - Main West Corridor:  X: -15 → -11 m (4.0 m wide, bridge approach)
-//   - Main East Corridor:  X: 11 → 15 m (4.0 m wide)
+//   - Main West Corridor:  X: -15 → -11 m (4.0 m wide)
+//   - Main East Corridor:  X: 11 → 15 m (4.0 m wide, bridge approach)
 //   - Main North Corridor: Z: 29.5 → 34 m (4.5 m wide)
-//   - Annexure Corridor:   X: -41 → -37 m (4.0 m wide)
+//   - Annexure Corridor:   X: 37 → 41 m (4.0 m wide)
 //
 // Door Openings: Width = 1.1 m, Height = 2.25 m (leaves opening in wall)
 // ============================================================
@@ -451,12 +451,12 @@ const AnnexureFloorInteriorWalls: React.FC<{
   mat: THREE.MeshStandardMaterial;
 }> = ({ yBase, flIdx, mat }) => {
   const materials = CampusMaterials.getInstance();
-  // Annexure dimensions: X = -53 → -33, Z = -8 → 44
-  // Outer rooms: X = -53 → -41 (12m wide)
-  // Corridor: X = -41 → -37 (4m wide spacious corridor)
-  // Inner east wall / stairwell / light court: X = -37 → -33
+  // Annexure dimensions: X = 33 → 53, Z = -8 → 44
+  // Inner east wall / stairwell / light court: X = 33 → 37
+  // Corridor: X = 37 → 41 (4m wide spacious corridor)
+  // Outer rooms: X = 41 → 53 (12m wide)
 
-  // Doors along X = -41 for each floor:
+  // Doors along X = 41 for each floor:
   let doorZs: number[] = [];
   let dividers: number[] = [];
 
@@ -480,48 +480,48 @@ const AnnexureFloorInteriorWalls: React.FC<{
 
   return (
     <group>
-      {/* ── Corridor Wall (X = -41, Z: -8 → 44, separating corridor from rooms) ─────────── */}
+      {/* ── Corridor Wall (X = 41, Z: -8 → 44, separating corridor from rooms) ─────────── */}
       {flIdx === 0 ? (
         <>
           {/* Ground floor: entrance opening between Dean and LH1 at Z = 0..2 */}
-          <ZWallWithDoors x={-41} z0={-8} z1={0} yBase={yBase} doorZs={[-4]} mat={mat} />
+          <ZWallWithDoors x={41} z0={-8} z1={0} yBase={yBase} doorZs={[-4]} mat={mat} />
           {/* Ground entrance portal header */}
-          <BoxWall pos={[-41, yBase + DOOR_H + LINTEL_H / 2, 1]} size={[WT, LINTEL_H, 2]} mat={mat} />
-          <ZWallWithDoors x={-41} z0={2} z1={44} yBase={yBase} doorZs={[8, 20, 32, 41]} mat={mat} />
+          <BoxWall pos={[41, yBase + DOOR_H + LINTEL_H / 2, 1]} size={[WT, LINTEL_H, 2]} mat={mat} />
+          <ZWallWithDoors x={41} z0={2} z1={44} yBase={yBase} doorZs={[8, 20, 32, 41]} mat={mat} />
         </>
       ) : (
-        <ZWallWithDoors x={-41} z0={-8} z1={44} yBase={yBase} doorZs={doorZs} mat={mat} />
+        <ZWallWithDoors x={41} z0={-8} z1={44} yBase={yBase} doorZs={doorZs} mat={mat} />
       )}
 
-      {/* ── Room Partition Walls (along X: -53 → -41, center X=-47) ────────── */}
+      {/* ── Room Partition Walls (along X: 41 → 53, center X=47) ────────── */}
       {dividers.map((pz) => (
         <BoxWall
           key={`ann-div-${pz}`}
-          pos={[-47, yBase + ROOM_H / 2, pz]}
+          pos={[47, yBase + ROOM_H / 2, pz]}
           size={[12, ROOM_H, WT]}
           mat={mat}
         />
       ))}
 
-      {/* ── Inner Core Enclosure (X = -37, separating stair/void from corridor) ── */}
+      {/* ── Inner Core Enclosure (X = 37, separating stair/void from corridor) ── */}
       {/* Open entrance portal on Ground floor and bridge portal on 1F & 2F */}
       {flIdx === 0 || flIdx === 1 || flIdx === 2 ? (
         <>
           {/* Bridge/Entrance portal gap at Z = 0..3 */}
-          <ZWallWithDoors x={-37} z0={-8} z1={0} yBase={yBase} mat={mat} />
-          <BoxWall pos={[-37, yBase + DOOR_H + LINTEL_H / 2, 1.5]} size={[WT, LINTEL_H, 3]} mat={mat} />
-          <ZWallWithDoors x={-37} z0={3} z1={44} yBase={yBase} mat={mat} />
+          <ZWallWithDoors x={37} z0={-8} z1={0} yBase={yBase} mat={mat} />
+          <BoxWall pos={[37, yBase + DOOR_H + LINTEL_H / 2, 1.5]} size={[WT, LINTEL_H, 3]} mat={mat} />
+          <ZWallWithDoors x={37} z0={3} z1={44} yBase={yBase} mat={mat} />
         </>
       ) : (
-        <ZWallWithDoors x={-37} z0={-8} z1={44} yBase={yBase} mat={mat} />
+        <ZWallWithDoors x={37} z0={-8} z1={44} yBase={yBase} mat={mat} />
       )}
 
       {/* Structural Navy Columns along Annexure Corridor */}
       {[0, 8, 16, 24, 32, 40].map((cz) => (
         <group key={`ann-col-${cz}`}>
-          <BoxWall pos={[-41, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
-          <BoxWall pos={[-37, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
-          <BoxWall pos={[-39, yBase + ROOM_H - 0.15, cz]} size={[4.0, 0.3, 0.3]} mat={materials.columnNavyBlue} />
+          <BoxWall pos={[41, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
+          <BoxWall pos={[37, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
+          <BoxWall pos={[39, yBase + ROOM_H - 0.15, cz]} size={[4.0, 0.3, 0.3]} mat={materials.columnNavyBlue} />
         </group>
       ))}
 
@@ -529,16 +529,16 @@ const AnnexureFloorInteriorWalls: React.FC<{
       {[-4, 4, 12, 20, 28, 36].map((cz) => (
         <LinearTubeLight
           key={`ann-lt-${cz}`}
-          pos={[-39, yBase + ROOM_H - 0.04, cz]}
+          pos={[39, yBase + ROOM_H - 0.04, cz]}
           rotY={Math.PI / 2}
           mat={materials.ledTubeLight}
         />
       ))}
 
       {/* Black skirting along corridor walls (leaving portal at Z = 0..3 open) */}
-      <BoxWall pos={[-41.11, yBase + 0.075, 18]} size={[0.02, 0.15, 52]} mat={materials.skirtingBlack} />
-      <BoxWall pos={[-36.89, yBase + 0.075, -4]} size={[0.02, 0.15, 8]} mat={materials.skirtingBlack} />
-      <BoxWall pos={[-36.89, yBase + 0.075, 23.5]} size={[0.02, 0.15, 41]} mat={materials.skirtingBlack} />
+      <BoxWall pos={[41.11, yBase + 0.075, 18]} size={[0.02, 0.15, 52]} mat={materials.skirtingBlack} />
+      <BoxWall pos={[36.89, yBase + 0.075, -4]} size={[0.02, 0.15, 8]} mat={materials.skirtingBlack} />
+      <BoxWall pos={[36.89, yBase + 0.075, 23.5]} size={[0.02, 0.15, 41]} mat={materials.skirtingBlack} />
     </group>
   );
 };

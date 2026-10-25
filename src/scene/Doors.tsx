@@ -175,11 +175,11 @@ const SingleDoor: React.FC<SingleDoorProps> = ({ roomNumber, roomName, position,
   // Orientation: ensure door leaf and wall plaque face directly into respective corridors
   let rotY = 0;
   if (Math.abs(position[0] - -15) < 0.8) {
-    rotY = -Math.PI / 2; // West corridor rooms face East into corridor
+    rotY = Math.PI / 2; // West corridor rooms face East into corridor
   } else if (Math.abs(position[0] - 15) < 0.8) {
-    rotY = Math.PI / 2; // East corridor rooms face West into corridor
-  } else if (Math.abs(position[0] - -41) < 0.8) {
-    rotY = -Math.PI / 2; // Annexure corridor rooms face East into corridor
+    rotY = -Math.PI / 2; // East corridor rooms face West into corridor
+  } else if (Math.abs(position[0] - 41) < 0.8) {
+    rotY = -Math.PI / 2; // Annexure corridor rooms face West into corridor
   } else if (Math.abs(position[2] - 34) < 0.8) {
     rotY = Math.PI; // Rear corridor rooms face South into corridor
   } else if (Math.abs(position[2] - 22) < 0.8) {

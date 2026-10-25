@@ -9,13 +9,13 @@ interface BridgeProps {
 
 const SingleBridge: React.FC<BridgeProps> = ({ yOffset, levelName }) => {
   const materials = CampusMaterials.getInstance();
-  const bridgeLength = 12; // Spans X: -21 (Main) to -33 (Annexure), center = -27
+  const bridgeLength = 12; // Spans X: 21 (Main) to 33 (Annexure), center = 27
   const bridgeWidth = 3.0; // Z: 0 to 3, center = 1.5
   const parapetH = 1.15;
   const parapetT = 0.2;
 
   return (
-    <group position={[-27, yOffset, 1.5]}>
+    <group position={[27, yOffset, 1.5]}>
       {/* ── 1. Structural Walkway Slab ────────────────────────────── */}
       <mesh position={[0, -0.15, 0]} material={materials.roofSlab} castShadow receiveShadow>
         <boxGeometry args={[bridgeLength, 0.3, bridgeWidth]} />
@@ -107,7 +107,7 @@ const SingleBridge: React.FC<BridgeProps> = ({ yOffset, levelName }) => {
 // ════════════════════════════════════════════════════════════
 // CONNECTING CORRIDOR ARCHED BLUE CANOPY (Multi-floor Corridor)
 // Prominently shown in 3D Isometric Overview & Satellite Top View
-// Spans X: -33 (Annexure) to -21 (Main) at Z = 1.5
+// Spans X: 21 (Main) to 33 (Annexure) at Z = 1.5
 // Features arched translucent cyan/blue polycarbonate canopy with
 // steel structural rib frames and side glazing.
 // ════════════════════════════════════════════════════════════
@@ -125,7 +125,7 @@ const ConnectingCorridorCanopy: React.FC<{ yBase: number }> = ({ yBase }) => {
   ];
 
   return (
-    <group position={[-27, yBase, 1.5]}>
+    <group position={[27, yBase, 1.5]}>
       {/* ── 1. Arched Polycarbonate Blue Canopy Roof ─────────────── */}
       {archFacets.map((f, idx) => (
         <mesh
@@ -195,7 +195,7 @@ const ConnectingCorridorCanopy: React.FC<{ yBase: number }> = ({ yBase }) => {
 export const Bridges: React.FC = () => {
   const explodedView = useCampusStore((s) => s.explodedView);
 
-  // Bridges span between X = -21 (Main) and X = -33 (Annexure) at Z = 1.5
+  // Bridges span between X = 21 (Main) and X = 33 (Annexure) at Z = 1.5
   // Bridge 1F is at Y = 4.0; Bridge 2F is at Y = 8.0; Bridge 3F is at Y = 12.0
   const yOffset1 = explodedView ? 4.0 * 1.5 : 4.0;
   const yOffset2 = explodedView ? 8.0 * 2.0 : 8.0;

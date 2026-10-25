@@ -230,23 +230,23 @@ const MAIN_STAIR_PATCHES: SlabPatch[] = [
 
 const ANNEXURE_PERMANENT_PATCHES: SlabPatch[] = [
   // South Wing (Z: -8 to 0)
-  { x0: -53, x1: -33, z0: -8, z1: 0 },
+  { x0: 33, x1: 53, z0: -8, z1: 0 },
   // North Wing (Z: 36 to 44)
-  { x0: -53, x1: -33, z0: 36, z1: 44 },
-  // West Outer Rooms (Z: 0 to 36)
-  { x0: -53, x1: -41, z0: 0, z1: 36 },
-  // East corridor & bridge approach
-  { x0: -41, x1: -36.5, z0: 0, z1: 13 },
-  { x0: -36.5, x1: -33.5, z0: 5.5, z1: 13 },
-  { x0: -33.5, x1: -33, z0: 0, z1: 13 },
-  // Around central light court (light court void is X: -44.5..-41.5, Z: 13..25)
-  { x0: -41.5, x1: -33, z0: 13, z1: 25 },
+  { x0: 33, x1: 53, z0: 36, z1: 44 },
+  // Outer Rooms away from Main (Z: 0 to 36, X: 41 to 53)
+  { x0: 41, x1: 53, z0: 0, z1: 36 },
+  // West/inner corridor & bridge approach (X: 33 to 41)
+  { x0: 36.5, x1: 41, z0: 0, z1: 13 },
+  { x0: 33.5, x1: 36.5, z0: 5.5, z1: 13 },
+  { x0: 33, x1: 33.5, z0: 0, z1: 13 },
+  // Around central light court (light court void is X: 41.5..44.5, Z: 13..25)
+  { x0: 33, x1: 41.5, z0: 13, z1: 25 },
   // North corridor
-  { x0: -41, x1: -33, z0: 25, z1: 36 },
+  { x0: 33, x1: 41, z0: 25, z1: 36 },
 ];
 
 const ANNEXURE_STAIR_PATCHES: SlabPatch[] = [
-  { x0: -40.5, x1: -37.5, z0: 0, z1: 5.5 }
+  { x0: 37.5, x1: 40.5, z0: 0, z1: 5.5 }
 ];
 
 // ============================================================
@@ -260,8 +260,8 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
   // Front facade windows (centered at X=0, entrance is X: -2.5..2.5)
   const frontWinX = isGround ? [-17, -11, -5, 5, 11, 17] : [-17, -11, -5, 0, 5, 11, 17];
   const rearWinX = [-17, -11, -5, 0, 5, 11, 17];
-  const westWinZ = [8, 16, 24, 32]; // Bridge portal at Z=0..3 on 1F/2F
-  const eastWinZ = [0, 8, 16, 24, 32];
+  const westWinZ = [0, 8, 16, 24, 32];
+  const eastWinZ = [8, 16, 24, 32]; // Bridge portal at Z=0..3 on 1F/2F
 
   // Downspout drain pipe X locations between window bays
   const frontDownspoutsX = [-14, -8, 8, 14];
@@ -423,24 +423,10 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
             size={[42.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
 
       {/* ══════════════════════════════════════════════════════════
-          INNER WEST FACADE (X = -21, facing Annexure and Pedestrian Bridge)
+          OUTER WEST FACADE  (X = -21, campus outer lawn side)
           ══════════════════════════════════════════════════════════ */}
-      {flIdx === 1 || flIdx === 2 ? (
-        <>
-          {/* Wall South of bridge portal: Z: -8 -> 0 */}
-          <Wall pos={[MAIN_X0 + WALL_T / 2, ROOM_H / 2, -4]}
-                size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
-          {/* Lintel Beam above bridge portal: Z: 0 -> 3 */}
-          <Wall pos={[MAIN_X0 + WALL_T / 2, ROOM_H - 0.4, 1.5]}
-                size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
-          {/* Wall North of bridge portal: Z: 3 -> 40 */}
-          <Wall pos={[MAIN_X0 + WALL_T / 2, ROOM_H / 2, 21.5]}
-                size={[WALL_T, ROOM_H, 37]} mat={materials.exteriorWall} />
-        </>
-      ) : (
-        <Wall pos={[MAIN_X0 + WALL_T / 2, ROOM_H / 2, 16]}
-              size={[WALL_T, ROOM_H, 48]} mat={materials.exteriorWall} />
-      )}
+      <Wall pos={[MAIN_X0 + WALL_T / 2, ROOM_H / 2, 16]}
+            size={[WALL_T, ROOM_H, 48]} mat={materials.exteriorWall} />
 
       {westWinZ.map((wz) => (
         <WindowFixture
@@ -467,10 +453,24 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
             size={[0.09, 0.04, 48.25]} mat={materials.windowWhiteFrame} />
 
       {/* ══════════════════════════════════════════════════════════
-          OUTER EAST FACADE  (X = 21, campus outer lawn side)
+          INNER EAST FACADE (X = 21, facing Annexure and Pedestrian Bridge)
           ══════════════════════════════════════════════════════════ */}
-      <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, 16]}
-            size={[WALL_T, ROOM_H, 48]} mat={materials.exteriorWall} />
+      {flIdx === 1 || flIdx === 2 ? (
+        <>
+          {/* Wall South of bridge portal: Z: -8 -> 0 */}
+          <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, -4]}
+                size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
+          {/* Lintel Beam above bridge portal: Z: 0 -> 3 */}
+          <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H - 0.4, 1.5]}
+                size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
+          {/* Wall North of bridge portal: Z: 3 -> 40 */}
+          <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, 21.5]}
+                size={[WALL_T, ROOM_H, 37]} mat={materials.exteriorWall} />
+        </>
+      ) : (
+        <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, 16]}
+              size={[WALL_T, ROOM_H, 48]} mat={materials.exteriorWall} />
+      )}
 
       {eastWinZ.map((wz) => (
         <WindowFixture
@@ -492,24 +492,24 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
 // ============================================================
 // ANNEXURE BLOCK
-// Width: 20m (X: -53 -> -33)
+// Width: 20m (X: 33 -> 53)
 // Depth: 52m (Z: -8 -> 44)
 // ============================================================
-const ANN_X0 = -53, ANN_X1 = -33;
+const ANN_X0 = 33, ANN_X1 = 53;
 const ANN_Z0 = -8, ANN_Z1 = 44;
-const ANN_CX = (ANN_X0 + ANN_X1) / 2; // -43
+const ANN_CX = (ANN_X0 + ANN_X1) / 2; // 43
 
 const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.CanvasTexture; materials: CampusMaterials }> = ({
   floorY, flIdx, grillTex, materials
 }) => {
   const isGround = flIdx === 0;
   const annWinZ = [-4, 4, 12, 20, 28, 36];
-  const annFrontX = [-51, -47, -43, -39, -35];
-  const annRearX = [-51, -47, -43, -39, -35];
+  const annFrontX = [35, 39, 43, 47, 51];
+  const annRearX = [35, 39, 43, 47, 51];
 
   // Split-AC outdoor units mounted on exterior walls of upper floors
   const annAcZ = !isGround ? [4, 16, 28] : [];
-  const annFrontAcX = !isGround ? [-49, -41, -37] : [];
+  const annFrontAcX = !isGround ? [37, 41, 49] : [];
   const annDownspoutsZ = [0, 16, 32];
 
   const annPatches = isGround ? [...ANNEXURE_PERMANENT_PATCHES, ...ANNEXURE_STAIR_PATCHES] : ANNEXURE_PERMANENT_PATCHES;
@@ -602,18 +602,33 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
       <Wall pos={[ANN_CX, ROOM_H + 0.33, ANN_Z1 + 0.025]}
             size={[20.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
 
-      {/* Outer West Facade (X = -53, campus outer edge) */}
-      <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, 18]}
-            size={[WALL_T, ROOM_H, 52]} mat={materials.exteriorWall} />
+      {/* Inner West Facade (X = 33, facing driveway and Pedestrian Bridge) */}
+      {/* On 1F & 2F: Bridge portal at Z = 0..3; On Ground: Entrance portal at Z = 0..3 */}
+      {flIdx === 0 || flIdx === 1 || flIdx === 2 ? (
+        <>
+          {/* Wall South of portal: Z: -8 -> 0 */}
+          <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, -4]}
+                size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
+          {/* Lintel Beam above portal: Z: 0 -> 3 */}
+          <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H - 0.4, 1.5]}
+                size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
+          {/* Wall North of portal: Z: 3 -> 44 */}
+          <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, 23.5]}
+                size={[WALL_T, ROOM_H, 41]} mat={materials.exteriorWall} />
+        </>
+      ) : (
+        <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, 18]}
+              size={[WALL_T, ROOM_H, 52]} mat={materials.exteriorWall} />
+      )}
 
-      {annWinZ.map((wz) => (
-        <WindowFixture
-          key={'af-ww-' + wz}
-          pos={[ANN_X0, WIN_CY, wz]}
-          facing="west"
-          materials={materials}
-          grillTex={grillTex}
-        />
+      {/* Vertical PVC Downspouts on Annexure Inner Facade */}
+      {annDownspoutsZ.map((pz) => (
+        <group key={`af-wdsp-${pz}`} position={[ANN_X0 - 0.08, ROOM_H / 2, pz]}>
+          <mesh geometry={SHARED_DOWNSPOUT_PIPE_GEOM} material={materials.pvcPipeWhite} />
+          {[-1.2, 0, 1.2].map((cy) => (
+            <mesh key={cy} position={[0.03, cy, 0]} geometry={SHARED_DOWNSPOUT_CLAMP_GEOM} material={materials.railingSteel} />
+          ))}
+        </group>
       ))}
 
       <Wall pos={[ANN_X0 - 0.02, ROOM_H + 0.15, 18]}
@@ -621,33 +636,18 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
       <Wall pos={[ANN_X0 - 0.025, ROOM_H + 0.33, 18]}
             size={[0.09, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
 
-      {/* Inner East Facade (X = -33, facing driveway and Pedestrian Bridge) */}
-      {/* On 1F & 2F: Bridge portal at Z = 0..3; On Ground: Entrance portal at Z = 0..3 */}
-      {flIdx === 0 || flIdx === 1 || flIdx === 2 ? (
-        <>
-          {/* Wall South of portal: Z: -8 -> 0 */}
-          <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H / 2, -4]}
-                size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
-          {/* Lintel Beam above portal: Z: 0 -> 3 */}
-          <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H - 0.4, 1.5]}
-                size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
-          {/* Wall North of portal: Z: 3 -> 44 */}
-          <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H / 2, 23.5]}
-                size={[WALL_T, ROOM_H, 41]} mat={materials.exteriorWall} />
-        </>
-      ) : (
-        <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H / 2, 18]}
-              size={[WALL_T, ROOM_H, 52]} mat={materials.exteriorWall} />
-      )}
+      {/* Outer East Facade (X = 53, campus outer edge) */}
+      <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H / 2, 18]}
+            size={[WALL_T, ROOM_H, 52]} mat={materials.exteriorWall} />
 
-      {/* Vertical PVC Downspouts on Annexure East Facade */}
-      {annDownspoutsZ.map((pz) => (
-        <group key={`af-edsp-${pz}`} position={[ANN_X1 + 0.08, ROOM_H / 2, pz]}>
-          <mesh geometry={SHARED_DOWNSPOUT_PIPE_GEOM} material={materials.pvcPipeWhite} />
-          {[-1.2, 0, 1.2].map((cy) => (
-            <mesh key={cy} position={[-0.03, cy, 0]} geometry={SHARED_DOWNSPOUT_CLAMP_GEOM} material={materials.railingSteel} />
-          ))}
-        </group>
+      {annWinZ.map((wz) => (
+        <WindowFixture
+          key={'af-ew-' + wz}
+          pos={[ANN_X1, WIN_CY, wz]}
+          facing="east"
+          materials={materials}
+          grillTex={grillTex}
+        />
       ))}
 
       <Wall pos={[ANN_X1 + 0.02, ROOM_H + 0.15, 18]}
@@ -931,8 +931,8 @@ export const BuildingShell: React.FC = () => {
       })}
 
       {/* ── ═══ HIGH BREEZEWAY GABLE CANOPY OVER ALLEYWAY (Photo 9.28.50 PM (2)) ═══ ── */}
-      {/* Spanning between roof parapets of Main (X = -21) and Annexure (X = -33) at Y = 16.5m */}
-      <group position={[-27, explodedView ? 16.5 * 1.75 : 16.5, 4.0]}>
+      {/* Spanning between roof parapets of Main (X = 21) and Annexure (X = 33) at Y = 16.5m */}
+      <group position={[27, explodedView ? 16.5 * 1.75 : 16.5, 4.0]}>
         {/* Steel Gable Trusses */}
         {[-3, 1, 5, 9].map((tz) => (
           <group key={`truss-${tz}`} position={[0, 0, tz]}>
@@ -1210,7 +1210,7 @@ export const BuildingShell: React.FC = () => {
         <Wall pos={[ANN_X1 + WALL_T / 2, 0.7, 18]} size={[WALL_T, 1.4, 52]} mat={materials.exteriorWall} />
         <Wall pos={[ANN_CX, 1.15, ANN_Z0 - WALL_T - 0.06]} size={[20.2, 0.8, 0.12]} mat={materials.corniceBronze} />
         {/* Annexure Central Light Court Opening Curb */}
-        <group position={[-43, 0.4, 19]}>
+        <group position={[ANN_CX, 0.4, 19]}>
           <Wall pos={[0, 0.5, -6]} size={[3.4, 1.0, 0.2]} mat={materials.exteriorWall} />
           <Wall pos={[0, 0.5, 6]} size={[3.4, 1.0, 0.2]} mat={materials.exteriorWall} />
           <Wall pos={[-1.5, 0.5, 0]} size={[0.2, 1.0, 12]} mat={materials.exteriorWall} />

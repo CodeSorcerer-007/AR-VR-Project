@@ -180,7 +180,7 @@ export const useCampusStore = create<CampusState>((set, get) => {
 
       if (x >= -23 && x <= 23 && z >= -7 && z <= 42) {
         blk = 'main';
-      } else if (x >= -55 && x <= -31 && z >= -7 && z <= 44) {
+      } else if (x >= 31 && x <= 55 && z >= -7 && z <= 44) {
         blk = 'annexure';
       }
 

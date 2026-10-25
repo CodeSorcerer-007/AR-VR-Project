@@ -55,13 +55,13 @@ export const courtyards: CourtyardVoid[] = [
   {
     id: 'annexure-courtyard-east',
     block: 'annexure',
-    position: [-43, 8, 19],
+    position: [43, 8, 19],
     dimensions: [3, 16, 12],
     parapetHeight: 1.2
   }
 ];
 
-// Open-air Pedestrian Bridges between Main (West wall) and Annexure (East corridor)
+// Open-air Pedestrian Bridges between Main (East/inner wall) and Annexure (West/inner corridor)
 export const bridgeLinks: BridgeLink[] = [
   {
     id: 'bridge-first-floor',
@@ -71,8 +71,8 @@ export const bridgeLinks: BridgeLink[] = [
     fromRoomId: 'main-1-fc3',
     toBlock: 'annexure',
     toRoomId: 'annexure-1-469',
-    startPoint: [-21, 4.0, 1.5],
-    endPoint: [-33, 4.0, 1.5],
+    startPoint: [21, 4.0, 1.5],
+    endPoint: [33, 4.0, 1.5],
     width: 3.0,
     hasRoof: false // Strictly open-air
   },
@@ -84,8 +84,8 @@ export const bridgeLinks: BridgeLink[] = [
     fromRoomId: 'main-2-fc6',
     toBlock: 'annexure',
     toRoomId: 'annexure-2-474',
-    startPoint: [-21, 8.0, 1.5],
-    endPoint: [-33, 8.0, 1.5],
+    startPoint: [21, 8.0, 1.5],
+    endPoint: [33, 8.0, 1.5],
     width: 3.0,
     hasRoof: false // Strictly open-air
   }
@@ -155,8 +155,8 @@ export const staircases: StairFlight[] = [
     block: 'annexure',
     fromFloor: 'ground',
     toFloor: 'first',
-    bottomPosition: [-45, 0, 0.5],
-    topPosition: [-45, 4.0, 4.5],
+    bottomPosition: [45, 0, 0.5],
+    topPosition: [45, 4.0, 4.5],
     width: 2.4
   },
   {
@@ -164,8 +164,8 @@ export const staircases: StairFlight[] = [
     block: 'annexure',
     fromFloor: 'first',
     toFloor: 'second',
-    bottomPosition: [-45, 4.0, 0.5],
-    topPosition: [-45, 8.0, 4.5],
+    bottomPosition: [45, 4.0, 0.5],
+    topPosition: [45, 8.0, 4.5],
     width: 2.4
   },
   {
@@ -173,8 +173,8 @@ export const staircases: StairFlight[] = [
     block: 'annexure',
     fromFloor: 'second',
     toFloor: 'third',
-    bottomPosition: [-45, 8.0, 0.5],
-    topPosition: [-45, 12.0, 4.5],
+    bottomPosition: [45, 8.0, 0.5],
+    topPosition: [45, 12.0, 4.5],
     width: 2.4
   }
 ];

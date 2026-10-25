@@ -26,14 +26,14 @@ export function generateCampusNavigationGraph(): NavigationWaypoint[] {
       { id: `main-${fl}-wp-front-mideast`, pos: [7, y, -2], label: `Main ${fl} Front Corridor` },
       { id: `main-${fl}-wp-front-east`, pos: [15, y, -2], label: `Main ${fl} Front-East Corridor` },
 
-      // West Corridor (along X = -15, Annexure Bridge side)
-      { id: `main-${fl}-wp-west-mid1`, pos: [-15, y, 1.5], label: `Main ${fl} West Corridor (Bridge Portal)` },
+      // West Corridor (along X = -15)
+      { id: `main-${fl}-wp-west-mid1`, pos: [-15, y, 6], label: `Main ${fl} West Corridor (South)` },
       { id: `main-${fl}-wp-west-cross`, pos: [-15, y, 16], label: `Main ${fl} West Junction` },
       { id: `main-${fl}-wp-west-mid2`, pos: [-15, y, 26], label: `Main ${fl} West Corridor (North)` },
       { id: `main-${fl}-wp-west-rear`, pos: [-15, y, 32], label: `Main ${fl} Rear-West Corridor` },
 
-      // East Corridor (along X = 15)
-      { id: `main-${fl}-wp-east-mid1`, pos: [15, y, 6], label: `Main ${fl} East Corridor (South)` },
+      // East Corridor (along X = 15, Annexure Bridge side)
+      { id: `main-${fl}-wp-east-mid1`, pos: [15, y, 1.5], label: `Main ${fl} East Corridor (Bridge Portal)` },
       { id: `main-${fl}-wp-east-cross`, pos: [15, y, 16], label: `Main ${fl} East Junction` },
       { id: `main-${fl}-wp-east-mid2`, pos: [15, y, 26], label: `Main ${fl} East Corridor (North)` },
       { id: `main-${fl}-wp-east-rear`, pos: [15, y, 32], label: `Main ${fl} Rear-East Corridor` },
@@ -99,14 +99,14 @@ export function generateCampusNavigationGraph(): NavigationWaypoint[] {
   floors.forEach((fl) => {
     const y = floorElevations[fl];
 
-    // Annexure corridor runs along X = -36 from Z = -2 to Z = 37
+    // Annexure corridor runs along X = 36 from Z = -2 to Z = 37
     const pts = [
-      { id: `annexure-${fl}-wp-south`, pos: [-36, y, -2], label: `Annexure ${fl} South Foyer` },
-      { id: `annexure-${fl}-wp-bridge-portal`, pos: [-36, y, 1.5], label: `Annexure ${fl} Bridge/Stair Portal` },
-      { id: `annexure-${fl}-wp-mid1`, pos: [-36, y, 10], label: `Annexure ${fl} Corridor (South)` },
-      { id: `annexure-${fl}-wp-mid2`, pos: [-36, y, 20], label: `Annexure ${fl} Corridor (Center)` },
-      { id: `annexure-${fl}-wp-mid3`, pos: [-36, y, 30], label: `Annexure ${fl} Corridor (North)` },
-      { id: `annexure-${fl}-wp-north`, pos: [-36, y, 37], label: `Annexure ${fl} North End` }
+      { id: `annexure-${fl}-wp-south`, pos: [36, y, -2], label: `Annexure ${fl} South Foyer` },
+      { id: `annexure-${fl}-wp-bridge-portal`, pos: [36, y, 1.5], label: `Annexure ${fl} Bridge/Stair Portal` },
+      { id: `annexure-${fl}-wp-mid1`, pos: [36, y, 10], label: `Annexure ${fl} Corridor (South)` },
+      { id: `annexure-${fl}-wp-mid2`, pos: [36, y, 20], label: `Annexure ${fl} Corridor (Center)` },
+      { id: `annexure-${fl}-wp-mid3`, pos: [36, y, 30], label: `Annexure ${fl} Corridor (North)` },
+      { id: `annexure-${fl}-wp-north`, pos: [36, y, 37], label: `Annexure ${fl} North End` }
     ];
 
     pts.forEach((p) => {
@@ -144,14 +144,14 @@ export function generateCampusNavigationGraph(): NavigationWaypoint[] {
   connectWaypoints(waypoints, 'annexure-second-wp-bridge-portal', 'annexure-third-wp-bridge-portal');
 
   // 4. Connect Permitted Open-Air Bridges (1st Floor and 2nd Floor ONLY)
-  // Bridge 1F: Main 1st Floor (West) <-> Annexure 1st Floor Portal
-  connectWaypoints(waypoints, 'main-first-wp-west-mid1', 'annexure-first-wp-bridge-portal');
+  // Bridge 1F: Main 1st Floor (East) <-> Annexure 1st Floor Portal
+  connectWaypoints(waypoints, 'main-first-wp-east-mid1', 'annexure-first-wp-bridge-portal');
 
-  // Bridge 2F: Main 2nd Floor (West) <-> Annexure 2nd Floor Portal
-  connectWaypoints(waypoints, 'main-second-wp-west-mid1', 'annexure-second-wp-bridge-portal');
+  // Bridge 2F: Main 2nd Floor (East) <-> Annexure 2nd Floor Portal
+  connectWaypoints(waypoints, 'main-second-wp-east-mid1', 'annexure-second-wp-bridge-portal');
 
   // 5. Connect Ground-Level Outdoor Walkway (Between Main and Annexure)
-  connectWaypoints(waypoints, 'main-ground-wp-front-west', 'annexure-ground-wp-bridge-portal');
+  connectWaypoints(waypoints, 'main-ground-wp-front-east', 'annexure-ground-wp-bridge-portal');
   connectWaypoints(waypoints, 'main-g-wp-exterior-approach', 'annexure-ground-wp-south');
 
   // 5. Connect Rooms to Nearest Corridor Waypoints

@@ -80,8 +80,8 @@ export const Exterior: React.FC = () => {
 
   // Coordinates:
   // Main Block: X = -21 to +21, Front facade Z = -8
-  // Annexure Block (West): X = -53 to -33, Front facade Z = -8
-  // Open Alleyway/Driveway: X = -33 to -21 (12m wide), Z = -20 to 46
+  // Open Alleyway/Driveway: X = 21 to 33 (12m wide), Z = -20 to 46
+  // Annexure Block: X = 33 to 53, Front facade Z = -8 (Left in front/screen view)
   // Approach road starts ~20m in front (Z = -28)
   // Forecourt paved zone: Z = -8 to -20
   // Main road: Z = -20 to -30
@@ -89,17 +89,17 @@ export const Exterior: React.FC = () => {
   return (
     <group>
       {/* ── 1. Ground Terrain ──────────────────────────────────── */}
-      <mesh position={[-16, -0.06, 15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <mesh position={[16, -0.06, 15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[220, 200]} />
         <meshStandardMaterial color="#c8d3c0" roughness={0.97} />
       </mesh>
 
       {/* ── 2. Main Approach Road (Z = -20 to -30) ──────────────── */}
-      <mesh position={[-16, 0.01, -25]} rotation={[-Math.PI / 2, 0, 0]} material={materials.asphaltRoad} receiveShadow>
+      <mesh position={[16, 0.01, -25]} rotation={[-Math.PI / 2, 0, 0]} material={materials.asphaltRoad} receiveShadow>
         <planeGeometry args={[140, 10]} />
       </mesh>
       {/* Road centre line dashes */}
-      {[-50, -38, -26, -14, -2, 10, 22, 34].map((rx) => (
+      {[-34, -22, -10, 2, 14, 26, 38, 50].map((rx) => (
         <mesh key={rx} position={[rx, 0.02, -25]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[5, 0.25]} />
           <meshBasicMaterial color="#ffffff" />
@@ -107,27 +107,27 @@ export const Exterior: React.FC = () => {
       ))}
 
       {/* ── 3. Paved Forecourt / Campus Driveway (Z = -8 to -20) ── */}
-      <mesh position={[-16, 0.02, -14]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <mesh position={[16, 0.02, -14]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[140, 12]} />
         <meshStandardMaterial color="#dde3e8" roughness={0.82} />
       </mesh>
 
       {/* ── 4. Open 12m Wide Connecting Driveway Between Main & Annexure ── */}
-      {/* X: -33 to -21, Z: -20 to +46 */}
-      <mesh position={[-27, 0.025, 13]} rotation={[-Math.PI / 2, 0, 0]} material={materials.asphaltRoad} receiveShadow>
+      {/* X: 21 to 33, Z: -20 to +46 */}
+      <mesh position={[27, 0.025, 13]} rotation={[-Math.PI / 2, 0, 0]} material={materials.asphaltRoad} receiveShadow>
         <planeGeometry args={[11.8, 66]} />
       </mesh>
       {/* Driveway kerb lines */}
-      <mesh position={[-32.9, 0.06, 13]} material={materials.curbStriped}>
+      <mesh position={[21.1, 0.06, 13]} material={materials.curbStriped}>
         <boxGeometry args={[0.2, 0.12, 66]} />
       </mesh>
-      <mesh position={[-21.1, 0.06, 13]} material={materials.curbStriped}>
+      <mesh position={[32.9, 0.06, 13]} material={materials.curbStriped}>
         <boxGeometry args={[0.2, 0.12, 66]} />
       </mesh>
 
       {/* ── 5. Landscaped Lawn Islands (matching reference photos) ── */}
-      {/* West Island — in front of Annexure Block (X = -43) */}
-      <group position={[-43, 0.05, -13]}>
+      {/* West Island — in front of Annexure Block (X = +43) */}
+      <group position={[43, 0.05, -13]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} material={materials.lawnGrass} receiveShadow>
           <planeGeometry args={[18, 6]} />
         </mesh>
@@ -149,8 +149,8 @@ export const Exterior: React.FC = () => {
         <CampusTree pos={[4, 0, 0.5]} scale={0.9} />
       </group>
 
-      {/* East Island — in front of Main East Wing (X = +12) */}
-      <group position={[12, 0.05, -13]}>
+      {/* East Island — in front of Main Outer Wing (X = -12) */}
+      <group position={[-12, 0.05, -13]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} material={materials.lawnGrass} receiveShadow>
           <planeGeometry args={[16, 6]} />
         </mesh>
@@ -182,7 +182,7 @@ export const Exterior: React.FC = () => {
       <SathyabamaBarricade pos={[2.8, 0, -16.5]} rotY={-0.06} />
 
       {/* ── 7. Back of campus – paved service road ──────────────── */}
-      <mesh position={[-16, 0.01, 46]} rotation={[-Math.PI / 2, 0, 0]} material={materials.asphaltRoad} receiveShadow>
+      <mesh position={[16, 0.01, 46]} rotation={[-Math.PI / 2, 0, 0]} material={materials.asphaltRoad} receiveShadow>
         <planeGeometry args={[120, 8]} />
       </mesh>
     </group>

@@ -80,9 +80,9 @@ console.log('✓ Special spaces verified.\n');
 
 // 6. Navigation Engine (Cross-Building Dijkstra Path)
 console.log('Test 6: Cross-Building Multi-Floor Pathfinding');
-// From Main Ground entrance/foyer ([-19, 0, -2]) to Annexure 3F Quantum Lab
+// From Main Ground entrance/foyer ([19, 0, -2]) to Annexure 3F Quantum Lab
 const navGraph = generateCampusNavigationGraph();
-const startPos: [number, number, number] = [-19, 0, -2];
+const startPos: [number, number, number] = [19, 0, -2];
 const route = findRoute(startPos, 'annexure-3-quantum-lab', navGraph);
 
 console.log(`Route found: ${route.found}`);

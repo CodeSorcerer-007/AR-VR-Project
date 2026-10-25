@@ -35,10 +35,10 @@ export const FloorPlanViewer: React.FC = () => {
 
   // SVG coordinate transformation:
   // Main Block: X in [-21, +21], Z in [-8, 40]
-  // Annexure Block: X in [-53, -33], Z in [-8, 44]
-  // Bridge spans X: [-33, -21] at Z: [0, 3]
+  // Annexure Block: X in [33, 53], Z in [-8, 44]
+  // Bridge spans X: [21, 33] at Z: [0, 3]
   const isMain = viewBlock === 'main';
-  const viewBox = isMain ? '-36 -12 61 56' : '-56 -12 36 60';
+  const viewBox = isMain ? '-25 -12 61 56' : '20 -12 36 60';
 
   // Visitor marker position in SVG coordinates
   const isVisitorOnCurrentFloorPlan = currentBlock === viewBlock && currentFloor === viewFloor;
@@ -186,7 +186,7 @@ export const FloorPlanViewer: React.FC = () => {
             {isMain ? (
               <rect x="-21" y="-8" width="42" height="48" fill="#131b2e" stroke="#334155" strokeWidth="0.6" rx="1" />
             ) : (
-              <rect x="-53" y="-8" width="20" height="52" fill="#131b2e" stroke="#334155" strokeWidth="0.6" rx="1" />
+              <rect x="33" y="-8" width="20" height="52" fill="#131b2e" stroke="#334155" strokeWidth="0.6" rx="1" />
             )}
 
             {/* Courtyard Voids (Open-to-sky hatched areas) */}
@@ -226,7 +226,7 @@ export const FloorPlanViewer: React.FC = () => {
             {(viewFloor === 'first' || viewFloor === 'second') && (
               <g>
                 <rect
-                  x="-33"
+                  x="21"
                   y="0"
                   width="12"
                   height="3"
@@ -236,7 +236,7 @@ export const FloorPlanViewer: React.FC = () => {
                   strokeDasharray="1 1"
                 />
                 <text
-                  x="-27"
+                  x="27"
                   y="1.8"
                   fontSize="0.9"
                   fill="var(--brand-amber)"

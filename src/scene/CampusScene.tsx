@@ -24,11 +24,11 @@ const OrbitCameraManager: React.FC<{ active: boolean }> = ({ active }) => {
   React.useEffect(() => {
     if (active && !prevActive.current) {
       // Front aerial vantage: looking north (+Z) at the campus
-      // Annexure Block is on the LEFT (-X), Main Block is centered (X=0)
-      camera.position.set(-16, 40, -50);
-      camera.lookAt(-16, 4, 16);
+      // Annexure Block is on the LEFT (+X in 3D when looking at +Z from -Z, screen left = +X)
+      camera.position.set(16, 40, -50);
+      camera.lookAt(16, 4, 16);
       if (controls && 'target' in controls) {
-        (controls as any).target.set(-16, 4, 16);
+        (controls as any).target.set(16, 4, 16);
         (controls as any).update?.();
       }
     }
@@ -171,7 +171,7 @@ export const CampusScene: React.FC = () => {
           {enableOrbit && !presentationActive && (
             <OrbitControls
               makeDefault
-              target={[-16, 4, 16]}
+              target={[16, 4, 16]}
               maxPolarAngle={Math.PI / 2.05}
               minDistance={5}
               maxDistance={120}
