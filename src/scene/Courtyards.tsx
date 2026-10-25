@@ -13,14 +13,15 @@ const CourtyardSunlightMotes: React.FC<{
   const pointsRef = useRef<THREE.Points>(null);
   const timeOfDay = useCampusStore((s) => s.timeOfDay);
   const qualityPreset = useCampusStore((s) => s.qualityPreset);
+  const cameraMode = useCampusStore((s) => s.cameraMode);
+  const overviewMode = useCampusStore((s) => s.overviewMode);
+  const presentationActive = useCampusStore((s) => s.presentationActive);
 
   const particleCount = qualityPreset === 'ultra' ? 80 : qualityPreset === 'high' ? 45 : 18;
   const [w, , d] = dimensions;
-  const frameCount = useRef(0);
 
-  const [positions, initialPositions] = useMemo(() => {
+  const [positions] = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
-    const init = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount; i++) {
       const x = (Math.random() - 0.5) * (w - 0.6);
       const y = Math.random() * 15 + 0.5;
@@ -28,11 +29,8 @@ const CourtyardSunlightMotes: React.FC<{
       pos[i * 3] = x;
       pos[i * 3 + 1] = y;
       pos[i * 3 + 2] = z;
-      init[i * 3] = x;
-      init[i * 3 + 1] = y;
-      init[i * 3 + 2] = z;
     }
-    return [pos, init];
+    return [pos];
   }, [particleCount, w, d]);
 
   useFrame((state) => {
@@ -42,7 +40,7 @@ const CourtyardSunlightMotes: React.FC<{
     pointsRef.current.position.y = Math.sin(time * 0.5) * 0.15;
   });
 
-  if (timeOfDay === 'night' || qualityPreset === 'low') return null;
+  if (timeOfDay === 'night' || qualityPreset === 'low' || cameraMode === 'orbit' || overviewMode || presentationActive) return null;
 
   const moteColor = timeOfDay === 'golden' ? '#ffedd5' : '#fef08a';
 

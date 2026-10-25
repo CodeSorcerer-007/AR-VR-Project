@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useCampusStore } from '../store/useCampusStore';
 import { Lights } from './Lights';
@@ -14,7 +14,6 @@ import { Furnishings } from './Furnishings';
 import { WalkController } from '../features/movement/WalkController';
 import { CinematicController } from '../features/presentation/CinematicController';
 import { RouteVisualizer } from '../features/navigation/RouteVisualizer';
-import { useThree } from '@react-three/fiber';
 
 // Handles camera position transition when switching to Orbit / Overview mode
 const OrbitCameraManager: React.FC<{ active: boolean }> = ({ active }) => {
@@ -42,53 +41,35 @@ const OrbitCameraManager: React.FC<{ active: boolean }> = ({ active }) => {
 const getSkyColor = (timeOfDay: string) =>
   timeOfDay === 'night' ? '#070b14' : timeOfDay === 'golden' ? '#fed7aa' : '#e0f2fe';
 
-// Dynamic Performance Guardian: Monitors real-time FPS and automatically downgrades settings if stuttering occurs
+// Dynamic Performance Guardian: Monitors real-time FPS inside Canvas useFrame loop
 const PerformanceGuardian: React.FC = () => {
   const qualityPreset = useCampusStore((s) => s.qualityPreset);
   const setQualityPreset = useCampusStore((s) => s.setQualityPreset);
   const frameTimes = React.useRef<number[]>([]);
-  const lastTime = React.useRef(performance.now());
   const lowFpsCount = React.useRef(0);
 
-  React.useEffect(() => {
-    // Expose FPS globally for HUD if needed
-    (window as any).__campusFps = 60;
-  }, []);
+  useFrame((_, delta) => {
+    if (delta > 0) {
+      const fps = Math.min(120, 1 / delta);
+      frameTimes.current.push(fps);
+      if (frameTimes.current.length > 20) frameTimes.current.shift();
 
-  useThree(); // ensure inside canvas
+      const avgFps = Math.round(frameTimes.current.reduce((a, b) => a + b, 0) / frameTimes.current.length);
+      (window as any).__campusFps = avgFps;
 
-  React.useEffect(() => {
-    let animId: number;
-    const loop = () => {
-      const now = performance.now();
-      const delta = now - lastTime.current;
-      lastTime.current = now;
-
-      if (delta > 0) {
-        const fps = 1000 / delta;
-        frameTimes.current.push(fps);
-        if (frameTimes.current.length > 30) frameTimes.current.shift();
-
-        const avgFps = frameTimes.current.reduce((a, b) => a + b, 0) / frameTimes.current.length;
-        (window as any).__campusFps = Math.round(avgFps);
-
-        // Auto-safeguard: if stuttering below 32 FPS on high/ultra for > 60 frames, auto-downgrade to medium/low
-        if (avgFps < 32 && (qualityPreset === 'ultra' || qualityPreset === 'high')) {
-          lowFpsCount.current++;
-          if (lowFpsCount.current > 60) {
-            console.warn('[PerformanceGuardian] Frame rate below 32 FPS. Auto-switching to high-performance mode.');
-            setQualityPreset('medium');
-            lowFpsCount.current = 0;
-          }
-        } else {
-          lowFpsCount.current = Math.max(0, lowFpsCount.current - 1);
+      // Auto-safeguard: if stuttering below 30 FPS on ultra for > 60 frames, auto-downgrade to high
+      if (avgFps < 30 && qualityPreset === 'ultra') {
+        lowFpsCount.current++;
+        if (lowFpsCount.current > 60) {
+          console.warn('[PerformanceGuardian] Frame rate below 30 FPS. Auto-switching to high preset.');
+          setQualityPreset('high');
+          lowFpsCount.current = 0;
         }
+      } else {
+        lowFpsCount.current = Math.max(0, lowFpsCount.current - 1);
       }
-      animId = requestAnimationFrame(loop);
-    };
-    animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
-  }, [qualityPreset, setQualityPreset]);
+    }
+  });
 
   return null;
 };
@@ -103,17 +84,18 @@ export const CampusScene: React.FC = () => {
   const skyColor = getSkyColor(timeOfDay);
 
   // Performance-capped DPR:
-  // low: 0.9 (buttery smooth on weak laptops/Intel UHD)
-  // medium: 1.0 (crisp and 60fps on standard screens)
-  // high: 1.2, ultra: 1.5
+  // low: 0.85 (ultra-smooth on weak integrated GPUs)
+  // medium: 1.0 (pixel-crisp and confirmed 60fps minimum)
+  // high: 1.0 (native crispness with rich materials)
+  // ultra: 1.25
   const maxDpr =
-    qualityPreset === 'ultra' ? 1.5 :
-    qualityPreset === 'high' ? 1.2 :
-    qualityPreset === 'medium' ? 1.0 : 0.9;
+    qualityPreset === 'ultra' ? 1.25 :
+    qualityPreset === 'high' ? 1.0 :
+    qualityPreset === 'medium' ? 1.0 : 0.85;
 
   const dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, maxDpr) : 1.0;
   const antialias = qualityPreset !== 'low';
-  const enableShadows = qualityPreset === 'ultra' ? 'soft' : qualityPreset === 'high' ? true : false;
+  const enableShadows = qualityPreset === 'ultra' ? 'soft' : false;
   const enableOrbit = cameraMode === 'orbit' || overviewMode;
 
   return (

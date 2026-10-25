@@ -152,55 +152,52 @@ const SingleBridge: React.FC<BridgeProps> = ({ yOffset }) => {
 const AlleywayCanopy: React.FC<{ yBase: number }> = ({ yBase }) => {
   const materials = CampusMaterials.getInstance();
   const span = 12.0;       // X: 21 → 33
-  const depth = 48.0;      // Z: -8 → 40 (full alleyway depth)
-  const canopyH = 0.06;    // sheet thickness
+  const depth = 36.0;      // Z: 0 → 36 (anchored over connecting bridges)
+  const canopyH = 0.05;    // sheet thickness
 
-  // Cross ribs at intervals along Z (every ~6m)
-  const ribZ = Array.from({ length: 9 }, (_, i) => -20 + i * 6);
+  // Cross ribs at intervals along Z (every 4.5m)
+  const ribZ = Array.from({ length: 9 }, (_, i) => -16 + i * 4.5);
 
   return (
-    <group position={[27, yBase, 14]}>
-      {/* Main corrugated polycarbonate/metal sheet panels — two slopes from centre */}
-      {/* Left slope (toward Annexure X = 33) */}
-      <mesh position={[-3, 0.5, 0]} rotation={[0, 0, -0.18]} material={materials.polycarbonateRoof} castShadow>
-        <boxGeometry args={[span / 2 + 0.4, canopyH, depth + 2]} />
-      </mesh>
-      {/* Right slope (toward Main X = 21) */}
-      <mesh position={[3, 0.5, 0]} rotation={[0, 0, 0.18]} material={materials.polycarbonateRoof} castShadow>
-        <boxGeometry args={[span / 2 + 0.4, canopyH, depth + 2]} />
+    <group position={[27, yBase, 18]}>
+      {/* Structural Central Ridge Purlin */}
+      <mesh position={[0, 0.45, 0]} material={materials.metalTrussGray}>
+        <boxGeometry args={[0.12, 0.12, depth]} />
       </mesh>
 
-      {/* Ridge purlin (apex) */}
-      <mesh position={[0, 1.1, 0]} material={materials.metalTrussGray}>
-        <boxGeometry args={[0.1, 0.12, depth + 2.5]} />
+      {/* Realistic gentle dual-pitch roof sheets securely resting on roof edges */}
+      {/* West slope toward Main Block (X = 21) */}
+      <mesh position={[-3.0, 0.22, 0]} rotation={[0, 0, -0.05]} material={materials.polycarbonateRoof}>
+        <boxGeometry args={[6.1, canopyH, depth]} />
+      </mesh>
+      {/* East slope toward Annexure Block (X = 33) */}
+      <mesh position={[3.0, 0.22, 0]} rotation={[0, 0, 0.05]} material={materials.polycarbonateRoof}>
+        <boxGeometry args={[6.1, canopyH, depth]} />
       </mesh>
 
-      {/* Eave purlins */}
-      <mesh position={[-5.8, 0, 0]} material={materials.metalTrussGray}>
-        <boxGeometry args={[0.1, 0.12, depth + 2.5]} />
-      </mesh>
-      <mesh position={[5.8, 0, 0]} material={materials.metalTrussGray}>
-        <boxGeometry args={[0.1, 0.12, depth + 2.5]} />
-      </mesh>
-
-      {/* Cross-rib steel trusses every 6m */}
+      {/* Supporting steel cross-rib trusses connecting both roof parapets */}
       {ribZ.map((rz) => (
-        <group key={`gable-rib-${rz}`} position={[0, 0, rz]}>
-          <mesh position={[-3, 0.5, 0]} rotation={[0, 0, -0.18]} material={materials.metalTrussGray}>
-            <boxGeometry args={[span / 2 + 0.4, 0.1, 0.1]} />
+        <group key={`canopy-truss-${rz}`} position={[0, 0, rz]}>
+          <mesh position={[-3.0, 0.22, 0]} rotation={[0, 0, -0.05]} material={materials.metalTrussGray}>
+            <boxGeometry args={[6.0, 0.08, 0.08]} />
           </mesh>
-          <mesh position={[3, 0.5, 0]} rotation={[0, 0, 0.18]} material={materials.metalTrussGray}>
-            <boxGeometry args={[span / 2 + 0.4, 0.1, 0.1]} />
+          <mesh position={[3.0, 0.22, 0]} rotation={[0, 0, 0.05]} material={materials.metalTrussGray}>
+            <boxGeometry args={[6.0, 0.08, 0.08]} />
           </mesh>
-          {/* Vertical king posts at eaves */}
-          <mesh position={[-5.8, -1.0, 0]} material={materials.metalTrussGray}>
-            <boxGeometry args={[0.08, 2.2, 0.08]} />
-          </mesh>
-          <mesh position={[5.8, -1.0, 0]} material={materials.metalTrussGray}>
-            <boxGeometry args={[0.08, 2.2, 0.08]} />
+          {/* Rigid horizontal bottom chord tie bar */}
+          <mesh position={[0, 0.02, 0]} material={materials.metalTrussGray}>
+            <boxGeometry args={[span, 0.06, 0.06]} />
           </mesh>
         </group>
       ))}
+
+      {/* South and North navy blue fascia edge trims */}
+      <mesh position={[0, 0.22, -depth / 2]} material={materials.columnNavyBlue}>
+        <boxGeometry args={[span + 0.1, 0.2, 0.06]} />
+      </mesh>
+      <mesh position={[0, 0.22, depth / 2]} material={materials.columnNavyBlue}>
+        <boxGeometry args={[span + 0.1, 0.2, 0.06]} />
+      </mesh>
     </group>
   );
 };
@@ -214,7 +211,7 @@ export const Bridges: React.FC = () => {
   const yOffset1  = explodedView ? 4.0  * 1.5  : 4.0;
   const yOffset2  = explodedView ? 8.0  * 2.0  : 8.0;
   const yOffset3  = explodedView ? 12.0 * 2.25 : 12.0;
-  const canopyY   = explodedView ? 16.0 * 2.3  : 16.0;
+  const canopyY   = explodedView ? 16.0 * 2.3  : 17.4;
 
   return (
     <group>

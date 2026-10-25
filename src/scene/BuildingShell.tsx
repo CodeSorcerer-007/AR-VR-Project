@@ -33,9 +33,10 @@ const Wall: React.FC<WallProps> = ({ pos, size, mat, castShadow = false, receive
 // ============================================================
 const MAIN_X0 = -21, MAIN_X1 = 21;
 const MAIN_Z0 = -8, MAIN_Z1 = 40;  // front at -8, back at 40
-const WALL_T = 0.3;   // exterior wall thickness
+const WALL_T = 0.35;  // exterior wall thickness (completely covers slab edges)
+const FLOOR_H = 4.0;  // collegiate structural floor-to-floor height (4 storeys = 16.0m)
 const ROOM_H = 3.5;   // clear room height
-const CEIL_H = 3.7;   // ceiling slab bottom
+const CEIL_H = 3.65;  // ceiling slab bottom
 
 // Entrance opening: centered at X=0, width=5.0m (X: -2.5 → 2.5), height=3.5m
 const ENT_CX = 0, ENT_W = 5.0, ENT_H = 3.5;
@@ -58,7 +59,7 @@ const SHARED_AC_HUB_GEOM = new THREE.CylinderGeometry(0.05, 0.05, 0.01, 12);
 const SHARED_AC_BRACKET_GEOM = new THREE.BoxGeometry(0.04, 0.16, 0.34);
 const SHARED_AC_PIPE_GEOM = new THREE.CylinderGeometry(0.02, 0.02, 0.2, 8);
 
-export const SHARED_DOWNSPOUT_PIPE_GEOM = new THREE.CylinderGeometry(0.045, 0.045, ROOM_H + 0.3, 8);
+export const SHARED_DOWNSPOUT_PIPE_GEOM = new THREE.CylinderGeometry(0.045, 0.045, FLOOR_H, 8);
 export const SHARED_DOWNSPOUT_CLAMP_GEOM = new THREE.BoxGeometry(0.11, 0.03, 0.06);
 
 // ============================================================
@@ -319,36 +320,37 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
       {/* ══════════════════════════════════════════════════════════
           FRONT FACADE  (Z = -8, faces visitor approach / forecourt)
+          Continuous monolithic 4.0m exterior wall module (0 gap)
           ══════════════════════════════════════════════════════════ */}
 
       {/* Ground floor: Left of entrance (X: -21 → -2.5) */}
       {isGround && (
-        <Wall pos={[-11.75, ROOM_H / 2, MAIN_Z0 + WALL_T / 2]}
-              size={[18.5, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
+        <Wall pos={[-11.75, FLOOR_H / 2, MAIN_Z0 + WALL_T / 2]}
+              size={[18.5, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
       )}
 
       {/* Ground floor: Right of entrance (X: 2.5 → 21) */}
       {isGround && (
-        <Wall pos={[11.75, ROOM_H / 2, MAIN_Z0 + WALL_T / 2]}
-              size={[18.5, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
+        <Wall pos={[11.75, FLOOR_H / 2, MAIN_Z0 + WALL_T / 2]}
+              size={[18.5, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
       )}
 
       {/* Upper floors */}
       {!isGround && (
         <>
-          <Wall pos={[-11.75, ROOM_H / 2, MAIN_Z0 + WALL_T / 2]}
-                size={[18.5, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
-          <Wall pos={[0, ROOM_H / 2, MAIN_Z0 + WALL_T / 2]}
-                size={[5.0, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
-          <Wall pos={[11.75, ROOM_H / 2, MAIN_Z0 + WALL_T / 2]}
-                size={[18.5, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
+          <Wall pos={[-11.75, FLOOR_H / 2, MAIN_Z0 + WALL_T / 2]}
+                size={[18.5, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
+          <Wall pos={[0, FLOOR_H / 2, MAIN_Z0 + WALL_T / 2]}
+                size={[5.0, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
+          <Wall pos={[11.75, FLOOR_H / 2, MAIN_Z0 + WALL_T / 2]}
+                size={[18.5, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
         </>
       )}
 
       {/* Entrance lintel beam (over opening, ground floor only) */}
       {isGround && (
-        <Wall pos={[ENT_CX, ROOM_H - 0.15, MAIN_Z0 + WALL_T / 2]}
-              size={[ENT_W + 0.4, 0.3, WALL_T + 0.08]} mat={materials.corniceBronze} />
+        <Wall pos={[ENT_CX, 3.65, MAIN_Z0 + WALL_T / 2]}
+              size={[ENT_W + 0.4, 0.7, WALL_T + 0.08]} mat={materials.corniceBronze} />
       )}
 
       {/* Front facade windows with blue sunshade chajjas */}
@@ -374,7 +376,7 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
       {/* Vertical PVC Downspouts on front facade with wall mounting clamps */}
       {frontDownspoutsX.map((px) => (
-        <group key={`mf-fdsp-${px}`} position={[px, ROOM_H / 2, MAIN_Z0 - 0.08]}>
+        <group key={`mf-fdsp-${px}`} position={[px, FLOOR_H / 2, MAIN_Z0 - 0.08]}>
           <mesh geometry={SHARED_DOWNSPOUT_PIPE_GEOM} material={materials.pvcPipeWhite} />
           {[-1.2, 0, 1.2].map((cy) => (
             <mesh key={cy} position={[0, cy, 0.03]} geometry={SHARED_DOWNSPOUT_CLAMP_GEOM} material={materials.railingSteel} />
@@ -383,17 +385,17 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
       ))}
 
       {/* Authentic dark bronze/chocolate horizontal spandrel cornice band */}
-      <Wall pos={[0, ROOM_H + 0.15, MAIN_Z0 - 0.02]}
-            size={[42.2, 0.35, 0.08]} mat={materials.corniceBronze} />
+      <Wall pos={[0, FLOOR_H, MAIN_Z0 - 0.02]}
+            size={[42.2, 0.35, 0.1]} mat={materials.corniceBronze} />
       {/* Crisp white floor divider reveal line */}
-      <Wall pos={[0, ROOM_H + 0.33, MAIN_Z0 - 0.025]}
-            size={[42.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[0, FLOOR_H + 0.18, MAIN_Z0 - 0.025]}
+            size={[42.25, 0.04, 0.11]} mat={materials.windowWhiteFrame} />
 
       {/* ══════════════════════════════════════════════════════════
           REAR FACADE  (Z = 40)
           ══════════════════════════════════════════════════════════ */}
-      <Wall pos={[0, ROOM_H / 2, MAIN_Z1 - WALL_T / 2]}
-            size={[42, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
+      <Wall pos={[0, FLOOR_H / 2, MAIN_Z1 - WALL_T / 2]}
+            size={[42, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
 
       {rearWinX.map((wx) => (
         <WindowFixture
@@ -417,7 +419,7 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
       {/* Vertical PVC Downspouts on rear facade */}
       {rearDownspoutsX.map((px) => (
-        <group key={`mf-rdsp-${px}`} position={[px, ROOM_H / 2, MAIN_Z1 + 0.08]}>
+        <group key={`mf-rdsp-${px}`} position={[px, FLOOR_H / 2, MAIN_Z1 + 0.08]}>
           <mesh geometry={SHARED_DOWNSPOUT_PIPE_GEOM} material={materials.pvcPipeWhite} />
           {[-1.2, 0, 1.2].map((cy) => (
             <mesh key={cy} position={[0, cy, -0.03]} geometry={SHARED_DOWNSPOUT_CLAMP_GEOM} material={materials.railingSteel} />
@@ -425,16 +427,16 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
         </group>
       ))}
 
-      <Wall pos={[0, ROOM_H + 0.15, MAIN_Z1 + 0.02]}
-            size={[42.2, 0.35, 0.08]} mat={materials.corniceBronze} />
-      <Wall pos={[0, ROOM_H + 0.33, MAIN_Z1 + 0.025]}
-            size={[42.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[0, FLOOR_H, MAIN_Z1 + 0.02]}
+            size={[42.2, 0.35, 0.1]} mat={materials.corniceBronze} />
+      <Wall pos={[0, FLOOR_H + 0.18, MAIN_Z1 + 0.025]}
+            size={[42.25, 0.04, 0.11]} mat={materials.windowWhiteFrame} />
 
       {/* ══════════════════════════════════════════════════════════
           OUTER WEST FACADE  (X = -21, campus outer lawn side)
           ══════════════════════════════════════════════════════════ */}
-      <Wall pos={[MAIN_X0 + WALL_T / 2, ROOM_H / 2, 16]}
-            size={[WALL_T, ROOM_H, 48]} mat={materials.exteriorWall} />
+      <Wall pos={[MAIN_X0 + WALL_T / 2, FLOOR_H / 2, 16]}
+            size={[WALL_T, FLOOR_H, 48]} mat={materials.exteriorWall} />
 
       {westWinZ.map((wz) => (
         <WindowFixture
@@ -455,30 +457,30 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
         />
       ))}
 
-      <Wall pos={[MAIN_X0 - 0.02, ROOM_H + 0.15, 16]}
-            size={[0.08, 0.35, 48.2]} mat={materials.corniceBronze} />
-      <Wall pos={[MAIN_X0 - 0.025, ROOM_H + 0.33, 16]}
-            size={[0.09, 0.04, 48.25]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[MAIN_X0 - 0.02, FLOOR_H, 16]}
+            size={[0.1, 0.35, 48.2]} mat={materials.corniceBronze} />
+      <Wall pos={[MAIN_X0 - 0.025, FLOOR_H + 0.18, 16]}
+            size={[0.11, 0.04, 48.25]} mat={materials.windowWhiteFrame} />
 
       {/* ══════════════════════════════════════════════════════════
           INNER EAST FACADE (X = 21, facing Annexure and Pedestrian Bridge)
           REAL ARCHITECTURE: Open colonnade — concrete columns + parapet,
           NO solid infill wall between columns. Matches all inner-facade photos.
-          Column spacing ~6m apart, 0.4m × 0.4m section, painted grey.
+          Column spacing ~6m apart, 0.45m × 0.45m section, painted grey.
           Low parapet wall 1.1m on ground floor, open balustrade on upper floors.
           ══════════════════════════════════════════════════════════ */}
       {/* Concrete columns at every 6m bay along east (inner) facade */}
       {[MAIN_Z0, 0, 6, 12, 18, 24, 30, 36, MAIN_Z1].map((cz, idx) => (
         <mesh key={`east-col-${idx}`}
-              position={[MAIN_X1, ROOM_H / 2, cz]}
+              position={[MAIN_X1, FLOOR_H / 2, cz]}
               material={materials.exteriorWall}
-              castShadow receiveShadow>
-          <boxGeometry args={[0.45, ROOM_H + 0.1, 0.45]} />
+              receiveShadow>
+          <boxGeometry args={[0.45, FLOOR_H, 0.45]} />
         </mesh>
       ))}
 
       {/* Continuous navy blue slab-edge / header beam along top of east colonnade */}
-      <mesh position={[MAIN_X1 + 0.06, ROOM_H + 0.18, 16]} material={materials.columnNavyBlue}>
+      <mesh position={[MAIN_X1 + 0.06, FLOOR_H - 0.18, 16]} material={materials.columnNavyBlue}>
         <boxGeometry args={[0.32, 0.36, 48.2]} />
       </mesh>
 
@@ -522,15 +524,15 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
       {/* Bridge portal lintel/header on floors 1F and 2F only */}
       {(flIdx === 1 || flIdx === 2) && (
-        <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H - 0.4, 1.5]}
+        <Wall pos={[MAIN_X1 - WALL_T / 2, FLOOR_H - 0.4, 1.5]}
               size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
       )}
 
       {/* Cornice strip still runs along the east edge */}
-      <Wall pos={[MAIN_X1 + 0.02, ROOM_H + 0.15, 16]}
-            size={[0.08, 0.35, 48.2]} mat={materials.corniceBronze} />
-      <Wall pos={[MAIN_X1 + 0.025, ROOM_H + 0.33, 16]}
-            size={[0.09, 0.04, 48.25]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[MAIN_X1 + 0.02, FLOOR_H, 16]}
+            size={[0.1, 0.35, 48.2]} mat={materials.corniceBronze} />
+      <Wall pos={[MAIN_X1 + 0.025, FLOOR_H + 0.18, 16]}
+            size={[0.11, 0.04, 48.25]} mat={materials.windowWhiteFrame} />
     </group>
   );
 };
@@ -580,18 +582,18 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
 
       {/* ── CONTINUOUS ARCHITECTURAL CANTILEVER CHAJJA SLAB WITH NAVY BLUE FASCIA (Photos 9.28.50 PM (1) & (2)) ── */}
       {/* Concrete cantilever projecting slab extending 0.65m forward across entire front facade */}
-      <mesh position={[ANN_CX, -0.1, ANN_Z0 - 0.325]} material={materials.exteriorWall} castShadow receiveShadow>
+      <mesh position={[ANN_CX, 0.0, ANN_Z0 - 0.325]} material={materials.exteriorWall} receiveShadow>
         <boxGeometry args={[20.5, 0.20, 0.65]} />
       </mesh>
       {/* Continuous deep navy blue front edge trim */}
-      <mesh position={[ANN_CX, -0.1, ANN_Z0 - 0.66]} material={materials.sunshadeNavyBlue}>
+      <mesh position={[ANN_CX, 0.0, ANN_Z0 - 0.66]} material={materials.sunshadeNavyBlue}>
         <boxGeometry args={[20.54, 0.20, 0.04]} />
       </mesh>
       {/* West and East side blue return caps */}
-      <mesh position={[ANN_X0 - 0.26, -0.1, ANN_Z0 - 0.325]} material={materials.sunshadeNavyBlue}>
+      <mesh position={[ANN_X0 - 0.26, 0.0, ANN_Z0 - 0.325]} material={materials.sunshadeNavyBlue}>
         <boxGeometry args={[0.04, 0.20, 0.67]} />
       </mesh>
-      <mesh position={[ANN_X1 + 0.26, -0.1, ANN_Z0 - 0.325]} material={materials.sunshadeNavyBlue}>
+      <mesh position={[ANN_X1 + 0.26, 0.0, ANN_Z0 - 0.325]} material={materials.sunshadeNavyBlue}>
         <boxGeometry args={[0.04, 0.20, 0.67]} />
       </mesh>
 
@@ -611,20 +613,20 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
       {/* ── ANNEXURE FRONT FACADE (Z = -8, Photos 9.28.50 PM (1) & (2)) ── */}
       {/* 1. OUTER / LEFT SOLID GREY WALL (X: 39.5 → 53.0) — Monolithic smooth architectural concrete finish */}
       <Wall
-        pos={[46.25, ROOM_H / 2, ANN_Z0 + WALL_T / 2]}
-        size={[13.5, ROOM_H, WALL_T]}
+        pos={[46.25, FLOOR_H / 2, ANN_Z0 + WALL_T / 2]}
+        size={[13.5, FLOOR_H, WALL_T]}
         mat={materials.exteriorWall}
       />
 
       {/* 2. INNER / RIGHT VERANDA CORNER BAY (X: 33.0 → 39.5, facing alleyway/Main Block) */}
       {/* Structural Corner Column at X = 33.25 */}
-      <mesh position={[33.25, ROOM_H / 2, ANN_Z0 + WALL_T / 2]} material={materials.exteriorWall} castShadow receiveShadow>
-        <boxGeometry args={[0.5, ROOM_H, WALL_T + 0.1]} />
+      <mesh position={[33.25, FLOOR_H / 2, ANN_Z0 + WALL_T / 2]} material={materials.exteriorWall} receiveShadow>
+        <boxGeometry args={[0.5, FLOOR_H, WALL_T + 0.1]} />
       </mesh>
 
       {/* Structural Pier at X = 39.3 */}
-      <mesh position={[39.3, ROOM_H / 2, ANN_Z0 + WALL_T / 2]} material={materials.exteriorWall} castShadow receiveShadow>
-        <boxGeometry args={[0.4, ROOM_H, WALL_T]} />
+      <mesh position={[39.3, FLOOR_H / 2, ANN_Z0 + WALL_T / 2]} material={materials.exteriorWall} receiveShadow>
+        <boxGeometry args={[0.4, FLOOR_H, WALL_T]} />
       </mesh>
 
       {isGround ? (
@@ -632,8 +634,8 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
         <group>
           {/* Right half service wall with window */}
           <Wall
-            pos={[37.6, ROOM_H / 2, ANN_Z0 + WALL_T / 2]}
-            size={[3.0, ROOM_H, WALL_T]}
+            pos={[37.6, FLOOR_H / 2, ANN_Z0 + WALL_T / 2]}
+            size={[3.0, FLOOR_H, WALL_T]}
             mat={materials.exteriorWall}
           />
           <WindowFixture
@@ -644,7 +646,7 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
           />
           {/* Left half open entrance portal with top lintel */}
           <Wall
-            pos={[34.8, ROOM_H - 0.4, ANN_Z0 + WALL_T / 2]}
+            pos={[34.8, FLOOR_H - 0.4, ANN_Z0 + WALL_T / 2]}
             size={[2.6, 0.8, WALL_T]}
             mat={materials.exteriorWall}
           />
@@ -675,10 +677,10 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
             <boxGeometry args={[5.55, 0.05, 0.05]} />
           </mesh>
 
-          {/* Top Lintel Beam (Y = 3.2 to 3.5m) */}
+          {/* Top Lintel Beam (Y = 3.4 to 4.0m) */}
           <Wall
-            pos={[36.3, 3.35, ANN_Z0 + WALL_T / 2]}
-            size={[5.6, 0.3, WALL_T]}
+            pos={[36.3, FLOOR_H - 0.3, ANN_Z0 + WALL_T / 2]}
+            size={[5.6, 0.6, WALL_T]}
             mat={materials.exteriorWall}
           />
 
@@ -689,7 +691,7 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
 
           {/* On 1F: Stainless steel water cooler unit against wall (Photo 2) */}
           {flIdx === 1 && (
-            <mesh position={[38.9, 1.2, -6.5]} material={materials.waterCoolerSteel} castShadow>
+            <mesh position={[38.9, 1.2, -6.5]} material={materials.waterCoolerSteel}>
               <boxGeometry args={[0.35, 0.7, 0.35]} />
             </mesh>
           )}
@@ -697,14 +699,14 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
       )}
 
       {/* Continuous cornice bands for Annexure */}
-      <Wall pos={[ANN_CX, ROOM_H + 0.15, ANN_Z0 - 0.02]}
-            size={[20.2, 0.35, 0.08]} mat={materials.corniceBronze} />
-      <Wall pos={[ANN_CX, ROOM_H + 0.33, ANN_Z0 - 0.025]}
-            size={[20.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[ANN_CX, FLOOR_H, ANN_Z0 - 0.02]}
+            size={[20.2, 0.35, 0.1]} mat={materials.corniceBronze} />
+      <Wall pos={[ANN_CX, FLOOR_H + 0.18, ANN_Z0 - 0.025]}
+            size={[20.25, 0.04, 0.11]} mat={materials.windowWhiteFrame} />
 
       {/* Rear facade (Z = 44) */}
-      <Wall pos={[ANN_CX, ROOM_H / 2, ANN_Z1 - WALL_T / 2]}
-            size={[20, ROOM_H, WALL_T]} mat={materials.exteriorWall} />
+      <Wall pos={[ANN_CX, FLOOR_H / 2, ANN_Z1 - WALL_T / 2]}
+            size={[20, FLOOR_H, WALL_T]} mat={materials.exteriorWall} />
 
       {annRearX.map((wx) => (
         <WindowFixture
@@ -716,48 +718,46 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
         />
       ))}
 
-      <Wall pos={[ANN_CX, ROOM_H + 0.15, ANN_Z1 + 0.02]}
-            size={[20.2, 0.35, 0.08]} mat={materials.corniceBronze} />
-      <Wall pos={[ANN_CX, ROOM_H + 0.33, ANN_Z1 + 0.025]}
-            size={[20.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[ANN_CX, FLOOR_H, ANN_Z1 + 0.02]}
+            size={[20.2, 0.35, 0.1]} mat={materials.corniceBronze} />
+      <Wall pos={[ANN_CX, FLOOR_H + 0.18, ANN_Z1 + 0.025]}
+            size={[20.25, 0.04, 0.11]} mat={materials.windowWhiteFrame} />
 
-      <Wall pos={[ANN_X0 - 0.02, ROOM_H + 0.15, 18]}
-            size={[0.08, 0.35, 52.2]} mat={materials.corniceBronze} />
-      <Wall pos={[ANN_X0 - 0.025, ROOM_H + 0.33, 18]}
-            size={[0.09, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[ANN_X0 - 0.02, FLOOR_H, 18]}
+            size={[0.1, 0.35, 52.2]} mat={materials.corniceBronze} />
+      <Wall pos={[ANN_X0 - 0.025, FLOOR_H + 0.18, 18]}
+            size={[0.11, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
 
       {/* ══════════════════════════════════════════════════════════
           ANNEXURE INNER WEST CORRIDOR (X = 33, facing main block)
-          REAL ARCHITECTURE: Open-air colonnade corridor with polycarbonate
-          grid roof. Concrete columns every ~6m, low parapet on courtyard side.
-          Polycarbonate roof over corridor is ONLY on upper floors (1F-3F);
-          ground floor has the solid entrance portal.
+          REAL ARCHITECTURE: Open-air colonnade corridor with concrete columns
+          every ~6m, low parapet on courtyard side.
           ══════════════════════════════════════════════════════════ */}
 
       {/* Structural columns along inner west facade at every 6m bay */}
       {[-8, -2, 4, 10, 16, 22, 28, 34, 40, 44].map((cz, idx) => (
         <mesh key={`ann-wcol-${idx}`}
-              position={[ANN_X0, ROOM_H / 2, cz]}
+              position={[ANN_X0, FLOOR_H / 2, cz]}
               material={materials.exteriorWall}
-              castShadow receiveShadow>
-          <boxGeometry args={[0.45, ROOM_H + 0.1, 0.45]} />
+              receiveShadow>
+          <boxGeometry args={[0.45, FLOOR_H, 0.45]} />
         </mesh>
       ))}
 
       {/* Continuous navy blue slab-edge beam along top of west colonnade */}
-      <mesh position={[ANN_X0 - 0.06, ROOM_H + 0.18, 18]} material={materials.columnNavyBlue}>
+      <mesh position={[ANN_X0 - 0.06, FLOOR_H - 0.18, 18]} material={materials.columnNavyBlue}>
         <boxGeometry args={[0.32, 0.36, 52.2]} />
       </mesh>
 
       {/* Ground floor: bridge/entrance portal Z=0..3 is open; rest solid */}
       {isGround && (
         <>
-          <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, -4]}
-                size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
-          <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H - 0.4, 1.5]}
+          <Wall pos={[ANN_X0 + WALL_T / 2, FLOOR_H / 2, -4]}
+                size={[WALL_T, FLOOR_H, 8]} mat={materials.exteriorWall} />
+          <Wall pos={[ANN_X0 + WALL_T / 2, FLOOR_H - 0.4, 1.5]}
                 size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
-          <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, 23.5]}
-                size={[WALL_T, ROOM_H, 41]} mat={materials.exteriorWall} />
+          <Wall pos={[ANN_X0 + WALL_T / 2, FLOOR_H / 2, 23.5]}
+                size={[WALL_T, FLOOR_H, 41]} mat={materials.exteriorWall} />
         </>
       )}
 
@@ -778,45 +778,15 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
         </group>
       ))}
 
-      {/* Upper floors 1F-3F: polycarbonate grid roof over the 2m-wide inner corridor */}
-      {/* The corridor is between X=33 and X=35 (rooms start at X=35+) */}
-      {!isGround && (() => {
-        const corrW = 2.2;   // corridor slab width on inner side
-        const ribSpacing = 3.0;
-        const ribCount = Math.floor(52 / ribSpacing);
-        return (
-          <group position={[ANN_X0 + corrW / 2 + 0.05, ROOM_H + 0.02, 18]}>
-            {/* Polycarbonate translucent roof panels */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} material={materials.polycarbonateRoof} castShadow>
-              <planeGeometry args={[corrW, 52]} />
-            </mesh>
-            {/* Longitudinal steel purlins */}
-            {[0.5, -0.5].map((pz) => (
-              <mesh key={pz} position={[0, 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}
-                    material={materials.metalTrussGray}>
-                <boxGeometry args={[corrW + 0.1, 0.08, 0.06]} />
-              </mesh>
-            ))}
-            {/* Cross-ribs every 3m */}
-            {Array.from({ length: ribCount + 1 }).map((_, ri) => (
-              <mesh key={ri} position={[0, 0.04, -26 + ri * ribSpacing]}
-                    material={materials.metalTrussGray}>
-                <boxGeometry args={[corrW + 0.15, 0.06, 0.08]} />
-              </mesh>
-            ))}
-          </group>
-        );
-      })()}
-
       {/* Bridge portal lintel on 1F and 2F (inner facade, Z=0..3) */}
       {(flIdx === 1 || flIdx === 2) && (
-        <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H - 0.4, 1.5]}
+        <Wall pos={[ANN_X0 + WALL_T / 2, FLOOR_H - 0.4, 1.5]}
               size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
       )}
 
       {/* Vertical PVC Downspouts on Annexure Inner Facade */}
       {annDownspoutsZ.map((pz) => (
-        <group key={`af-wdsp-${pz}`} position={[ANN_X0 - 0.08, ROOM_H / 2, pz]}>
+        <group key={`af-wdsp-${pz}`} position={[ANN_X0 - 0.08, FLOOR_H / 2, pz]}>
           <mesh geometry={SHARED_DOWNSPOUT_PIPE_GEOM} material={materials.pvcPipeWhite} />
           {[-1.2, 0, 1.2].map((cy) => (
             <mesh key={cy} position={[0.03, cy, 0]} geometry={SHARED_DOWNSPOUT_CLAMP_GEOM} material={materials.railingSteel} />
@@ -825,8 +795,8 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
       ))}
 
       {/* Outer East Facade (X = 53, campus outer edge) */}
-      <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H / 2, 18]}
-            size={[WALL_T, ROOM_H, 52]} mat={materials.exteriorWall} />
+      <Wall pos={[ANN_X1 - WALL_T / 2, FLOOR_H / 2, 18]}
+            size={[WALL_T, FLOOR_H, 52]} mat={materials.exteriorWall} />
 
       {annWinZ.map((wz) => (
         <WindowFixture
@@ -838,10 +808,10 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
         />
       ))}
 
-      <Wall pos={[ANN_X1 + 0.02, ROOM_H + 0.15, 18]}
-            size={[0.08, 0.35, 52.2]} mat={materials.corniceBronze} />
-      <Wall pos={[ANN_X1 + 0.025, ROOM_H + 0.33, 18]}
-            size={[0.09, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
+      <Wall pos={[ANN_X1 + 0.02, FLOOR_H, 18]}
+            size={[0.1, 0.35, 52.2]} mat={materials.corniceBronze} />
+      <Wall pos={[ANN_X1 + 0.025, FLOOR_H + 0.18, 18]}
+            size={[0.11, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
     </group>
   );
 };

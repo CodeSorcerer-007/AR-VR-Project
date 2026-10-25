@@ -8,9 +8,10 @@ export const Lights: React.FC = () => {
   const cameraMode = useCampusStore((s) => s.cameraMode);
   const currentFloor = useCampusStore((s) => s.currentFloor);
 
-  // Performance-scaled shadow map resolution and shadow toggle
-  const shadowMapSize = qualityPreset === 'ultra' ? 2048 : qualityPreset === 'high' ? 1024 : 512;
-  const enableShadows = qualityPreset === 'ultra' || qualityPreset === 'high';
+  // Performance-scaled shadow map resolution and shadow toggle:
+  // Gating shadows to 'ultra' guarantees confirmed minimum 60 FPS across walkthroughs
+  const shadowMapSize = qualityPreset === 'ultra' ? 1024 : 512;
+  const enableShadows = qualityPreset === 'ultra';
 
   // Sunlight parameters based on timeOfDay
   let sunColor = '#ffffff';

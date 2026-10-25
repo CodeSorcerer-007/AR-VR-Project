@@ -543,12 +543,21 @@ export const FloorGeometry: React.FC = () => {
   const materials = CampusMaterials.getInstance();
   const explodedView = useCampusStore((s) => s.explodedView);
   const currentFloor = useCampusStore((s) => s.currentFloor);
+  const currentBlock = useCampusStore((s) => s.currentBlock);
   const cameraMode = useCampusStore((s) => s.cameraMode);
+  const presentationActive = useCampusStore((s) => s.presentationActive);
+  const presentationIndex = useCampusStore((s) => s.presentationIndex);
   const isWalking = cameraMode === 'first-person' || cameraMode === 'third-person';
 
-  // Performance Optimization: In overview / orbit mode without exploded view,
-  // interior partition walls and corridor lights are 100% occluded by the solid exterior building shell & roof
-  if (!isWalking && !explodedView) {
+  // Interior presentation stops:
+  // Stop 2 (idx 2): Annexure Ground Floor LH1
+  // Stop 4 (idx 4): Annexure 3rd Floor Gen AI Lab
+  // Stop 5 (idx 5): Main 2nd Floor Server Room
+  const isInteriorPresentation = presentationActive && (presentationIndex === 2 || presentationIndex === 4 || presentationIndex === 5);
+
+  // In overview / orbit mode without exploded view and not in interior presentation stop,
+  // interior partition walls and corridor lights are 100% occluded by exterior shell & roof
+  if (!isWalking && !explodedView && !isInteriorPresentation) {
     return null;
   }
 
@@ -561,12 +570,26 @@ export const FloorGeometry: React.FC = () => {
   return (
     <group>
       {floorElevations.map((baseY, flIdx) => {
+        // High-performance floor-level culling
+        if (!explodedView) {
+          if (isWalking && flIdx !== activeIdx) return null;
+          if (presentationActive) {
+            if (presentationIndex === 2 && flIdx !== 0) return null;
+            if (presentationIndex === 4 && flIdx !== 3) return null;
+            if (presentationIndex === 5 && flIdx !== 2) return null;
+          }
+        }
+
         const y = explodedView ? baseY * (1 + flIdx * 0.25) : baseY;
 
         return (
           <React.Fragment key={`fl-geom-${flIdx}`}>
-            <MainFloorInteriorWalls yBase={y} flIdx={flIdx} mat={materials.interiorWall} />
-            <AnnexureFloorInteriorWalls yBase={y} flIdx={flIdx} mat={materials.interiorWall} />
+            {(!presentationActive || presentationIndex === 5 || explodedView || currentBlock !== 'annexure') && (
+              <MainFloorInteriorWalls yBase={y} flIdx={flIdx} mat={materials.interiorWall} />
+            )}
+            {(!presentationActive || presentationIndex === 2 || presentationIndex === 4 || explodedView || currentBlock !== 'main') && (
+              <AnnexureFloorInteriorWalls yBase={y} flIdx={flIdx} mat={materials.interiorWall} />
+            )}
           </React.Fragment>
         );
       })}

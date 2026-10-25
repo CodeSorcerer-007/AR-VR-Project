@@ -402,12 +402,27 @@ export const Stairs: React.FC = () => {
   const explodedView = useCampusStore((s) => s.explodedView);
   const cameraMode = useCampusStore((s) => s.cameraMode);
   const qualityPreset = useCampusStore((s) => s.qualityPreset);
+  const currentFloor = useCampusStore((s) => s.currentFloor);
+  const currentBlock = useCampusStore((s) => s.currentBlock);
 
   const isWalking = cameraMode === 'first-person' || cameraMode === 'third-person';
+
+  // In overview / orbit / presentation mode without exploded view, interior staircases are occluded by exterior walls & roofs
+  if (!isWalking && !explodedView) {
+    return null;
+  }
 
   return (
     <group>
       {staircases.map((stair) => {
+        // In walk mode, cull stairs that do not connect to current floor or are in the opposite wing
+        if (isWalking && !explodedView) {
+          const connectsToCurrentFloor = stair.fromFloor === currentFloor || stair.toFloor === currentFloor;
+          if (!connectsToCurrentFloor) return null;
+          if (currentBlock === 'main' && stair.block === 'annexure') return null;
+          if (currentBlock === 'annexure' && stair.block === 'main') return null;
+        }
+
         const [bx, by, bz] = stair.bottomPosition;
         const flIdx = stair.fromFloor === 'ground' ? 0 : stair.fromFloor === 'first' ? 1 : 2;
         const yBase = explodedView ? by * (1 + flIdx * 0.25) : by;

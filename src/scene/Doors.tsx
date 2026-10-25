@@ -250,6 +250,8 @@ export const Doors: React.FC = () => {
   const currentFloor = useCampusStore((s) => s.currentFloor);
   const cameraMode = useCampusStore((s) => s.cameraMode);
   const explodedView = useCampusStore((s) => s.explodedView);
+  const presentationActive = useCampusStore((s) => s.presentationActive);
+  const presentationIndex = useCampusStore((s) => s.presentationIndex);
   const isWalking = cameraMode === 'first-person' || cameraMode === 'third-person';
 
   return (
@@ -258,8 +260,19 @@ export const Doors: React.FC = () => {
         // Skip entrance open foyers
         if (room.id.includes('entrance') || room.id.includes('bridge-portal')) return null;
 
-        // In overview/orbit mode without exploded view, interior doors are occluded by exterior walls
-        if (!isWalking && !explodedView && !room.id.includes('lab')) return null;
+        // In overview/orbit mode without exploded view and not in presentation mode, interior doors are occluded
+        if (!isWalking && !explodedView && !presentationActive) return null;
+
+        // In presentation mode, only render doors for the visited room
+        if (presentationActive && !explodedView) {
+          if (presentationIndex === 2 && room.id !== 'lh1') return null;
+          if (presentationIndex === 4 && !room.id.includes('gen-ai')) return null;
+          if (presentationIndex === 5 && !room.id.includes('server')) return null;
+          if (presentationIndex !== 2 && presentationIndex !== 4 && presentationIndex !== 5) return null;
+        }
+
+        // In walk mode without exploded view, only render doors on the current active floor
+        if (isWalking && !explodedView && room.floor !== currentFloor) return null;
 
         // Flagship labs with feature entrance (CSS Lab, Design Thinking, Machine Vision, Web 3)
         // User Answer 9: Feature entrance faces the front corridor (Z = 10)

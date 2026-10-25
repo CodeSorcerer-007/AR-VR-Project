@@ -76,14 +76,28 @@ export const Furnishings: React.FC = () => {
   const cameraMode = useCampusStore((s) => s.cameraMode);
   const qualityPreset = useCampusStore((s) => s.qualityPreset);
 
+  const presentationActive = useCampusStore((s) => s.presentationActive);
+  const presentationIndex = useCampusStore((s) => s.presentationIndex);
   const isWalking = cameraMode === 'first-person' || cameraMode === 'third-person';
 
   // High-performance culling:
-  // 1. In orbit/overview mode without exploded view, interior furnishings are completely hidden behind solid exterior concrete facades and roof slabs.
-  // 2. In walk mode without exploded view, only render furnishings on the active floor.
-  // 3. Cull opposite wing when deep in Main or Annexure blocks.
+  // 1. In orbit/overview mode without exploded view and not in presentation mode, interior furnishings are completely hidden behind solid exterior concrete facades and roof slabs.
+  // 2. In presentation mode:
+  //    - Stop 2 (index 2): Annexure Ground Floor LH1
+  //    - Stop 4 (index 4): Annexure Third Floor Flagship Gen AI Lab
+  //    - Stop 5 (index 5): Main Second Floor Server Room
+  //    - Exterior stops (0, 1, 3, 6): 100% CULLED (0 interior meshes) -> guaranteed 60+ FPS!
+  // 3. In walk mode without exploded view, only render furnishings on the active floor.
+  // 4. Cull opposite wing when deep in Main or Annexure blocks.
   const shouldRenderRoom = (roomFloor: string, roomBlock?: string) => {
-    if (!isWalking && !explodedView) return false;
+    if (!isWalking && !explodedView && !presentationActive) return false;
+
+    if (presentationActive) {
+      if (presentationIndex === 2 && roomFloor === 'ground' && roomBlock === 'annexure') return true;
+      if (presentationIndex === 4 && roomFloor === 'third' && roomBlock === 'annexure') return true;
+      if (presentationIndex === 5 && roomFloor === 'second' && roomBlock === 'main') return true;
+      return false;
+    }
 
     if (isWalking && !explodedView) {
       if (roomFloor !== currentFloor) return false;
@@ -155,6 +169,11 @@ export const Furnishings: React.FC = () => {
     labScreenMeshRef.current.instanceMatrix.needsUpdate = true;
   }, [labs, explodedView]);
 
+  const shouldShowLabComputers =
+    explodedView ||
+    (isWalking && currentFloor === 'third' && currentBlock === 'annexure') ||
+    (presentationActive && presentationIndex === 4);
+
   return (
     <group>
       {/* =========================================================================
@@ -164,13 +183,13 @@ export const Furnishings: React.FC = () => {
       <instancedMesh
         ref={labPcMeshRef}
         args={[SHARED_UNIT_BOX_GEOM, materials.computerChassis, labComputerCount]}
-        visible={isWalking || explodedView}
+        visible={shouldShowLabComputers}
       />
       {/* Instanced Glowing Screens */}
       <instancedMesh
         ref={labScreenMeshRef}
         args={[SHARED_UNIT_BOX_GEOM, materials.computerScreenGlow, labComputerCount]}
-        visible={isWalking || explodedView}
+        visible={shouldShowLabComputers}
       />
 
       {labs.filter((lab) => shouldRenderRoom(lab.floor, lab.block)).map((lab) => {
