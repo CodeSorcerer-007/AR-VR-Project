@@ -74,7 +74,11 @@ export const CampusHUD: React.FC = () => {
       if (e.key === 'm' || e.key === 'M') {
         useCampusStore.getState().setFloorPlanOpen(!useCampusStore.getState().floorPlanOpen);
       } else if (e.key === 'x' || e.key === 'X') {
-        useCampusStore.getState().setExplodedView(!useCampusStore.getState().explodedView);
+        const next = !useCampusStore.getState().explodedView;
+        useCampusStore.getState().setExplodedView(next);
+        if (next && useCampusStore.getState().cameraMode !== 'orbit') {
+          useCampusStore.getState().setCameraMode('orbit');
+        }
       } else if (e.key === 'p' || e.key === 'P') {
         useCampusStore.getState().togglePresentation();
       } else if (e.key === '1') {
@@ -253,7 +257,13 @@ export const CampusHUD: React.FC = () => {
             {/* 3D Exploded / Stacked View */}
             {!simplifiedHUD && (
               <button
-                onClick={() => setExplodedView(!explodedView)}
+                onClick={() => {
+                  const next = !explodedView;
+                  setExplodedView(next);
+                  if (next && cameraMode !== 'orbit') {
+                    setCameraMode('orbit');
+                  }
+                }}
                 className={`glass-btn ${explodedView ? 'active' : ''}`}
                 title="3D Stacked / Exploded Floors (X)"
               >

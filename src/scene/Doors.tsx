@@ -261,9 +261,6 @@ export const Doors: React.FC = () => {
         // In overview/orbit mode without exploded view, interior doors are occluded by exterior walls
         if (!isWalking && !explodedView && !room.id.includes('lab')) return null;
 
-        // In walking mode, strictly only render doors and placards on current active floor
-        if (isWalking && !explodedView && room.floor !== currentFloor) return null;
-
         // Flagship labs with feature entrance (CSS Lab, Design Thinking, Machine Vision, Web 3)
         // User Answer 9: Feature entrance faces the front corridor (Z = 10)
         let featureLabName: string | undefined = undefined;

@@ -178,9 +178,9 @@ export const useCampusStore = create<CampusState>((set, get) => {
       else if (y >= 2.5) fl = 'first';
       else fl = 'ground';
 
-      if (x >= -23 && x <= 23 && z >= -7 && z <= 42) {
+      if (x >= -23 && x <= 23 && z >= -8.5 && z <= 42) {
         blk = 'main';
-      } else if (x >= 31 && x <= 55 && z >= -7 && z <= 44) {
+      } else if (x >= 31 && x <= 55 && z >= -8.5 && z <= 45) {
         blk = 'annexure';
       }
 

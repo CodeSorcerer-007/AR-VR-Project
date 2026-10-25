@@ -112,9 +112,6 @@ export const Courtyards: React.FC = () => {
 
             {/* ── Multi-Floor Parapets & Structural Navy Blue Frames ── */}
             {floorElevations.map((baseY, flIdx) => {
-              if (isWalking && !explodedView && Math.abs(flIdx - activeIdx) > 1) {
-                return null;
-              }
               const y = explodedView ? baseY * (1 + flIdx * 0.25) : baseY;
 
               return (

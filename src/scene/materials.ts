@@ -326,6 +326,8 @@ export class CampusMaterials {
   public pvcPipeWhite: THREE.MeshStandardMaterial;
   public ledTubeLight: THREE.MeshStandardMaterial;
   public canopyBlue: THREE.MeshStandardMaterial;
+  public polycarbonateRoof: THREE.MeshStandardMaterial;
+  public darkGraniteFoyer: THREE.MeshStandardMaterial;
   public solarPanel: THREE.MeshStandardMaterial;
   public solarFrame: THREE.MeshStandardMaterial;
   public roofTerracottaTile: THREE.MeshStandardMaterial;
@@ -414,7 +416,8 @@ export class CampusMaterials {
     this.ceilingConcrete = new THREE.MeshStandardMaterial({
       color: '#f8fafc',
       roughness: 0.95,
-      metalness: 0.02
+      metalness: 0.02,
+      side: THREE.DoubleSide
     });
 
     // Honey-teak wood flush doors with chevron grooves
@@ -599,6 +602,24 @@ export class CampusMaterials {
       map: woodSlatTex,
       roughness: 0.5,
       metalness: 0.08
+    });
+
+    // Translucent polycarbonate corrugated roof panels — annexure corridor + bridge cover
+    // Matches the grid-pattern translucent ceiling panels seen in photos
+    this.polycarbonateRoof = new THREE.MeshStandardMaterial({
+      color: '#e8f4fd',
+      roughness: 0.35,
+      metalness: 0.05,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide
+    });
+
+    // Dark polished granite foyer/corridor floor (entrance and Web3 lab corridor)
+    this.darkGraniteFoyer = new THREE.MeshStandardMaterial({
+      color: '#1c2026',
+      roughness: 0.22,
+      metalness: 0.3
     });
 
     // Bridge arched steel trusses and courtyard pergola trellis

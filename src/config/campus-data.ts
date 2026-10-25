@@ -155,8 +155,8 @@ export const staircases: StairFlight[] = [
     block: 'annexure',
     fromFloor: 'ground',
     toFloor: 'first',
-    bottomPosition: [45, 0, 0.5],
-    topPosition: [45, 4.0, 4.5],
+    bottomPosition: [39, 0, 0.5],
+    topPosition: [39, 4.0, 5.5],
     width: 2.4
   },
   {
@@ -164,8 +164,8 @@ export const staircases: StairFlight[] = [
     block: 'annexure',
     fromFloor: 'first',
     toFloor: 'second',
-    bottomPosition: [45, 4.0, 0.5],
-    topPosition: [45, 8.0, 4.5],
+    bottomPosition: [39, 4.0, 0.5],
+    topPosition: [39, 8.0, 5.5],
     width: 2.4
   },
   {
@@ -173,8 +173,8 @@ export const staircases: StairFlight[] = [
     block: 'annexure',
     fromFloor: 'second',
     toFloor: 'third',
-    bottomPosition: [45, 8.0, 0.5],
-    topPosition: [45, 12.0, 4.5],
+    bottomPosition: [39, 8.0, 0.5],
+    topPosition: [39, 12.0, 5.5],
     width: 2.4
   }
 ];

@@ -477,8 +477,8 @@ export const Furnishings: React.FC = () => {
               </mesh>
             </group>
 
-            {/* Annexure Block Corridor water station */}
-            <group position={[-38.5, 0, 14]}>
+            {/* Annexure Block Corridor water station (mounted near classroom 470/471 wall) */}
+            <group position={[40.8, 0, 14]}>
               <mesh position={[0, 0.25, 0]} material={materials.chairBlack} geometry={SHARED_COOLER_STAND_A_GEOM} />
               <mesh position={[0, 0.85, 0]} material={materials.waterCoolerSteel} geometry={SHARED_COOLER_BODY_A_GEOM} />
               <mesh position={[0, 1.7, 0.02]} geometry={SHARED_COOLER_SIGN_A_GEOM}>

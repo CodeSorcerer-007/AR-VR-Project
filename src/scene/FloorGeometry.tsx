@@ -220,14 +220,14 @@ const MainFloorInteriorWalls: React.FC<{
     ? [-18, -12, -6, 6, 12, 18] // Ground: skip central entrance passage at X=-3..3
     : [-18, -12, -6, 0, 6, 12, 18]; // Upper: all rooms have doors
 
-  // West corridor doors (X = -15, Z in [0, 34])
-  const westDoorZs = [4.5, 13.5, 22.5, 30.5];
+  // West corridor doors (X = -15, Z in [5.5, 34])
+  const westDoorZs = [13.5, 22.5, 30.5];
 
   // Rear corridor doors (Z = 34, X in [-21, 21])
   const rearDoorXs = [-18, -12, -6, 0, 6, 12, 18];
 
-  // East corridor doors (X = 15, Z in [0, 34])
-  const eastDoorZs = [4.5, 13.5, 22.5, 30.5];
+  // East corridor doors (X = 15, Z in [5.5, 34])
+  const eastDoorZs = [13.5, 22.5, 30.5];
 
   return (
     <group>
@@ -253,14 +253,22 @@ const MainFloorInteriorWalls: React.FC<{
         <XWallWithDoors x0={-21} x1={21} z={-2} yBase={yBase} doorXs={frontDoorXs} mat={mat} />
       )}
 
-      {/* West corridor wall (X = -15, Z: -2 → 34, separating west rooms from corridor) */}
-      <ZWallWithDoors x={-15} z0={-2} z1={34} yBase={yBase} doorZs={westDoorZs} mat={mat} />
+      {/* West corridor wall (starts at Z = 5.5 to leave stair opening clear) */}
+      <ZWallWithDoors x={-15} z0={5.5} z1={34} yBase={yBase} doorZs={westDoorZs} mat={mat} />
+      {/* West stairwell rear wall behind landing */}
+      <BoxWall pos={[-15, yBase + ROOM_H / 2, 5.5]} size={[3.0, ROOM_H, WT]} mat={mat} />
+      {/* West stairwell outer side wall (separating stair from adjacent classroom) */}
+      <BoxWall pos={[-16.5, yBase + ROOM_H / 2, 2.75]} size={[WT, ROOM_H, 5.5]} mat={mat} />
 
       {/* Rear corridor wall (Z = 34, X: -21 → 21) */}
       <XWallWithDoors x0={-21} x1={21} z={34} yBase={yBase} doorXs={rearDoorXs} mat={mat} />
 
-      {/* East corridor wall (X = 15, Z: -2 → 34, separating east rooms from corridor) */}
-      <ZWallWithDoors x={15} z0={-2} z1={34} yBase={yBase} doorZs={eastDoorZs} mat={mat} />
+      {/* East corridor wall (starts at Z = 5.5 to leave stair opening clear) */}
+      <ZWallWithDoors x={15} z0={5.5} z1={34} yBase={yBase} doorZs={eastDoorZs} mat={mat} />
+      {/* East stairwell rear wall behind landing */}
+      <BoxWall pos={[15, yBase + ROOM_H / 2, 5.5]} size={[3.0, ROOM_H, WT]} mat={mat} />
+      {/* East stairwell outer side wall (separating stair from adjacent classroom) */}
+      <BoxWall pos={[16.5, yBase + ROOM_H / 2, 2.75]} size={[WT, ROOM_H, 5.5]} mat={mat} />
 
       {/* ═══════════════════════════════════════════════════════
           2. ROOM PARTITION WALLS (Dividing adjacent rooms)
@@ -503,25 +511,12 @@ const AnnexureFloorInteriorWalls: React.FC<{
         />
       ))}
 
-      {/* ── Inner Core Enclosure (X = 37, separating stair/void from corridor) ── */}
-      {/* Open entrance portal on Ground floor and bridge portal on 1F & 2F */}
-      {flIdx === 0 || flIdx === 1 || flIdx === 2 ? (
-        <>
-          {/* Bridge/Entrance portal gap at Z = 0..3 */}
-          <ZWallWithDoors x={37} z0={-8} z1={0} yBase={yBase} mat={mat} />
-          <BoxWall pos={[37, yBase + DOOR_H + LINTEL_H / 2, 1.5]} size={[WT, LINTEL_H, 3]} mat={mat} />
-          <ZWallWithDoors x={37} z0={3} z1={44} yBase={yBase} mat={mat} />
-        </>
-      ) : (
-        <ZWallWithDoors x={37} z0={-8} z1={44} yBase={yBase} mat={mat} />
-      )}
-
-      {/* Structural Navy Columns along Annexure Corridor */}
+      {/* Structural Navy Columns & Ceiling Beams across Annexure Open Corridor (Photos 9.28.54 PM & 9.28.50 PM) */}
       {[0, 8, 16, 24, 32, 40].map((cz) => (
         <group key={`ann-col-${cz}`}>
           <BoxWall pos={[41, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
-          <BoxWall pos={[37, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
-          <BoxWall pos={[39, yBase + ROOM_H - 0.15, cz]} size={[4.0, 0.3, 0.3]} mat={materials.columnNavyBlue} />
+          <BoxWall pos={[33.2, yBase + ROOM_H / 2, cz]} size={[0.35, ROOM_H, 0.4]} mat={materials.columnNavyBlue} />
+          <BoxWall pos={[37.1, yBase + ROOM_H - 0.15, cz]} size={[8.0, 0.3, 0.3]} mat={materials.columnNavyBlue} />
         </group>
       ))}
 
@@ -529,16 +524,14 @@ const AnnexureFloorInteriorWalls: React.FC<{
       {[-4, 4, 12, 20, 28, 36].map((cz) => (
         <LinearTubeLight
           key={`ann-lt-${cz}`}
-          pos={[39, yBase + ROOM_H - 0.04, cz]}
+          pos={[37.5, yBase + ROOM_H - 0.04, cz]}
           rotY={Math.PI / 2}
           mat={materials.ledTubeLight}
         />
       ))}
 
-      {/* Black skirting along corridor walls (leaving portal at Z = 0..3 open) */}
+      {/* Black skirting along classroom corridor wall */}
       <BoxWall pos={[41.11, yBase + 0.075, 18]} size={[0.02, 0.15, 52]} mat={materials.skirtingBlack} />
-      <BoxWall pos={[36.89, yBase + 0.075, -4]} size={[0.02, 0.15, 8]} mat={materials.skirtingBlack} />
-      <BoxWall pos={[36.89, yBase + 0.075, 23.5]} size={[0.02, 0.15, 41]} mat={materials.skirtingBlack} />
     </group>
   );
 };
@@ -568,12 +561,6 @@ export const FloorGeometry: React.FC = () => {
   return (
     <group>
       {floorElevations.map((baseY, flIdx) => {
-        // Performance Optimization: In walking mode, only render active floor
-        // Solid concrete floor slabs completely occlude other floors, cutting 75% of interior draw calls
-        if (isWalking && !explodedView && flIdx !== activeIdx) {
-          return null;
-        }
-
         const y = explodedView ? baseY * (1 + flIdx * 0.25) : baseY;
 
         return (

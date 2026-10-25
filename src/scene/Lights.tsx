@@ -60,11 +60,11 @@ export const Lights: React.FC = () => {
         shadow-mapSize-width={shadowMapSize}
         shadow-mapSize-height={shadowMapSize}
         shadow-camera-near={10}
-        shadow-camera-far={180}
-        shadow-camera-left={-55}
-        shadow-camera-right={55}
-        shadow-camera-top={55}
-        shadow-camera-bottom={-55}
+        shadow-camera-far={220}
+        shadow-camera-left={-70}
+        shadow-camera-right={70}
+        shadow-camera-top={70}
+        shadow-camera-bottom={-70}
         shadow-bias={-0.0003}
         shadow-normalBias={0.02}
         shadow-radius={qualityPreset === 'ultra' ? 2.5 : 1.5}
@@ -73,7 +73,7 @@ export const Lights: React.FC = () => {
       {/* Secondary Soft Fill Sun Bounce */}
       <directionalLight
         color="#93c5fd"
-        intensity={0.28}
+        intensity={0.32}
         position={[-30, 40, 40]}
       />
 
@@ -89,19 +89,26 @@ export const Lights: React.FC = () => {
 
             return (
               <group key={`int-fl-${idx}`}>
-                {/* Main Block - Central Core Light */}
-                <pointLight position={[-21, flY + 3.2, 16]} intensity={0.75} distance={24} color="#f8fafc" decay={2} />
+                {/* Main Block - Central Flagship Lab Core Light (X: 0, Z: 16) */}
+                <pointLight position={[0, flY + 3.2, 16]} intensity={0.9} distance={28} color="#f8fafc" decay={2} />
 
-                {/* Annexure Block - Central Corridor Light */}
-                <pointLight position={[18, flY + 3.2, 18]} intensity={0.65} distance={22} color="#f8fafc" decay={2} />
+                {/* Main Block - West Corridor (X: -13, Z: 16) */}
+                <pointLight position={[-13, flY + 3.2, 16]} intensity={0.75} distance={22} color="#f8fafc" decay={2} />
 
-                {/* Additional wing fill lights on high and ultra presets */}
-                {(qualityPreset === 'ultra' || qualityPreset === 'high') && (
-                  <>
-                    <pointLight position={[-35, flY + 3.2, 16]} intensity={0.5} distance={16} color="#f8fafc" decay={2} />
-                    <pointLight position={[-6, flY + 3.2, 16]} intensity={0.5} distance={16} color="#f8fafc" decay={2} />
-                  </>
-                )}
+                {/* Main Block - East Corridor / Bridge Approach (X: 13, Z: 16) */}
+                <pointLight position={[13, flY + 3.2, 16]} intensity={0.75} distance={22} color="#f8fafc" decay={2} />
+
+                {/* Main Block - North Rear Corridor (X: 0, Z: 32) */}
+                <pointLight position={[0, flY + 3.2, 32]} intensity={0.7} distance={22} color="#f8fafc" decay={2} />
+
+                {/* Annexure Block - Central Corridor (X: 37, Z: 18) */}
+                <pointLight position={[37, flY + 3.2, 18]} intensity={0.85} distance={26} color="#f8fafc" decay={2} />
+
+                {/* Annexure Block - South Corridor / Bridge Approach (X: 37, Z: 2) */}
+                <pointLight position={[37, flY + 3.2, 2]} intensity={0.75} distance={22} color="#f8fafc" decay={2} />
+
+                {/* Annexure Block - North Corridor (X: 37, Z: 34) */}
+                <pointLight position={[37, flY + 3.2, 34]} intensity={0.7} distance={22} color="#f8fafc" decay={2} />
               </group>
             );
           })}

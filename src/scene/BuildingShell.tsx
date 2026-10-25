@@ -233,20 +233,28 @@ const ANNEXURE_PERMANENT_PATCHES: SlabPatch[] = [
   { x0: 33, x1: 53, z0: -8, z1: 0 },
   // North Wing (Z: 36 to 44)
   { x0: 33, x1: 53, z0: 36, z1: 44 },
-  // Outer Rooms away from Main (Z: 0 to 36, X: 41 to 53)
-  { x0: 41, x1: 53, z0: 0, z1: 36 },
-  // West/inner corridor & bridge approach (X: 33 to 41)
-  { x0: 36.5, x1: 41, z0: 0, z1: 13 },
-  { x0: 33.5, x1: 36.5, z0: 5.5, z1: 13 },
-  { x0: 33, x1: 33.5, z0: 0, z1: 13 },
+
+  // West side of stair (Z: 0 to 5.5, X: 33 to 36.5) - solid floor leading from bridge & colonnade
+  { x0: 33, x1: 36.5, z0: 0, z1: 5.5 },
+
+  // Main Open Corridor (Z: 5.5 to 36, X: 33 to 41) - continuous rigid corridor floor
+  { x0: 33, x1: 41, z0: 5.5, z1: 36 },
+
+  // Outer Rooms (X: 41 to 53)
+  // South rooms (Classroom 469 / 474 / Web3 Lab front) Z: 0 to 13
+  { x0: 41, x1: 53, z0: 0, z1: 13 },
+  // North rooms (Classroom 472 / 473 / Restrooms) Z: 25 to 36
+  { x0: 41, x1: 53, z0: 25, z1: 36 },
   // Around central light court (light court void is X: 41.5..44.5, Z: 13..25)
-  { x0: 33, x1: 41.5, z0: 13, z1: 25 },
-  // North corridor
-  { x0: 33, x1: 41, z0: 25, z1: 36 },
+  // East of light court (X: 44.5 to 53)
+  { x0: 44.5, x1: 53, z0: 13, z1: 25 },
+  // West of light court (X: 41 to 41.5)
+  { x0: 41, x1: 41.5, z0: 13, z1: 25 },
 ];
 
 const ANNEXURE_STAIR_PATCHES: SlabPatch[] = [
-  { x0: 37.5, x1: 40.5, z0: 0, z1: 5.5 }
+  // Stair opening patch for Ground floor (X: 36.5 to 41, Z: 0 to 5.5)
+  { x0: 36.5, x1: 41, z0: 0, z1: 5.5 }
 ];
 
 // ============================================================
@@ -274,7 +282,7 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
   // Floor & Ceiling slab patches with stairwell & courtyard cutouts
   const floorPatches = isGround ? [...MAIN_PERMANENT_PATCHES, ...MAIN_STAIR_PATCHES] : MAIN_PERMANENT_PATCHES;
-  const ceilPatches = flIdx === 4 ? [...MAIN_PERMANENT_PATCHES, ...MAIN_STAIR_PATCHES] : MAIN_PERMANENT_PATCHES;
+  const ceilPatches = flIdx === 3 ? [...MAIN_PERMANENT_PATCHES, ...MAIN_STAIR_PATCHES] : MAIN_PERMANENT_PATCHES;
 
   return (
     <group position={[0, floorY, 0]}>
@@ -454,34 +462,71 @@ const MainFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.Canva
 
       {/* ══════════════════════════════════════════════════════════
           INNER EAST FACADE (X = 21, facing Annexure and Pedestrian Bridge)
+          REAL ARCHITECTURE: Open colonnade — concrete columns + parapet,
+          NO solid infill wall between columns. Matches all inner-facade photos.
+          Column spacing ~6m apart, 0.4m × 0.4m section, painted grey.
+          Low parapet wall 1.1m on ground floor, open balustrade on upper floors.
           ══════════════════════════════════════════════════════════ */}
-      {flIdx === 1 || flIdx === 2 ? (
-        <>
-          {/* Wall South of bridge portal: Z: -8 -> 0 */}
-          <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, -4]}
-                size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
-          {/* Lintel Beam above bridge portal: Z: 0 -> 3 */}
-          <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H - 0.4, 1.5]}
-                size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
-          {/* Wall North of bridge portal: Z: 3 -> 40 */}
-          <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, 21.5]}
-                size={[WALL_T, ROOM_H, 37]} mat={materials.exteriorWall} />
-        </>
-      ) : (
-        <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H / 2, 16]}
-              size={[WALL_T, ROOM_H, 48]} mat={materials.exteriorWall} />
-      )}
-
-      {eastWinZ.map((wz) => (
-        <WindowFixture
-          key={`mf-ew-${wz}`}
-          pos={[MAIN_X1, WIN_CY, wz]}
-          facing="east"
-          materials={materials}
-          grillTex={grillTex}
-        />
+      {/* Concrete columns at every 6m bay along east (inner) facade */}
+      {[MAIN_Z0, 0, 6, 12, 18, 24, 30, 36, MAIN_Z1].map((cz, idx) => (
+        <mesh key={`east-col-${idx}`}
+              position={[MAIN_X1, ROOM_H / 2, cz]}
+              material={materials.exteriorWall}
+              castShadow receiveShadow>
+          <boxGeometry args={[0.45, ROOM_H + 0.1, 0.45]} />
+        </mesh>
       ))}
 
+      {/* Continuous navy blue slab-edge / header beam along top of east colonnade */}
+      <mesh position={[MAIN_X1 + 0.06, ROOM_H + 0.18, 16]} material={materials.columnNavyBlue}>
+        <boxGeometry args={[0.32, 0.36, 48.2]} />
+      </mesh>
+
+      {/* Low concrete parapet / balustrade wall between columns (ground floor: 1.1m solid) */}
+      {isGround && [
+        [-4, 6],   // Z: -8 → -2
+        [3, 6],    // Z:  0 →  6
+        [9, 6],    // Z:  6 → 12
+        [15, 6],   // Z: 12 → 18
+        [21, 6],   // Z: 18 → 24
+        [27, 6],   // Z: 24 → 30
+        [33, 6],   // Z: 30 → 36
+        [38, 4],   // Z: 36 → 40 (shorter last bay)
+      ].map(([czc, ww], idx) => (
+        <mesh key={`east-par-gnd-${idx}`}
+              position={[MAIN_X1 + WALL_T / 2, 0.55, czc]}
+              material={materials.exteriorWall}>
+          <boxGeometry args={[WALL_T, 1.1, ww - 0.5]} />
+        </mesh>
+      ))}
+
+      {/* Upper floors: open balustrade (0.1m concrete parapet + steel horizontal rail) */}
+      {!isGround && [
+        [-4, 6], [3, 6], [9, 6], [15, 6], [21, 6], [27, 6], [33, 6], [38, 4]
+      ].map(([czc, ww], idx) => (
+        <group key={`east-rail-${idx}`} position={[MAIN_X1 + 0.05, 0, czc]}>
+          {/* Low concrete parapet wall 1.0m */}
+          <mesh position={[0, 0.5, 0]} material={materials.exteriorWall}>
+            <boxGeometry args={[WALL_T, 1.0, ww - 0.5]} />
+          </mesh>
+          {/* Navy blue coping cap on parapet */}
+          <mesh position={[0, 1.04, 0]} material={materials.columnNavyBlue}>
+            <boxGeometry args={[WALL_T + 0.04, 0.07, ww - 0.45]} />
+          </mesh>
+          {/* Horizontal steel guard rail above parapet */}
+          <mesh position={[0, 1.2, 0]} material={materials.railingSteel}>
+            <boxGeometry args={[0.04, 0.05, ww - 0.5]} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Bridge portal lintel/header on floors 1F and 2F only */}
+      {(flIdx === 1 || flIdx === 2) && (
+        <Wall pos={[MAIN_X1 - WALL_T / 2, ROOM_H - 0.4, 1.5]}
+              size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
+      )}
+
+      {/* Cornice strip still runs along the east edge */}
       <Wall pos={[MAIN_X1 + 0.02, ROOM_H + 0.15, 16]}
             size={[0.08, 0.35, 48.2]} mat={materials.corniceBronze} />
       <Wall pos={[MAIN_X1 + 0.025, ROOM_H + 0.33, 16]}
@@ -511,7 +556,7 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
   const annDownspoutsZ = [0, 16, 32];
 
   const annPatches = isGround ? [...ANNEXURE_PERMANENT_PATCHES, ...ANNEXURE_STAIR_PATCHES] : ANNEXURE_PERMANENT_PATCHES;
-  const annCeilPatches = flIdx === 4 ? [...ANNEXURE_PERMANENT_PATCHES, ...ANNEXURE_STAIR_PATCHES] : ANNEXURE_PERMANENT_PATCHES;
+  const annCeilPatches = flIdx === 3 ? [...ANNEXURE_PERMANENT_PATCHES, ...ANNEXURE_STAIR_PATCHES] : ANNEXURE_PERMANENT_PATCHES;
 
   return (
     <group position={[0, floorY, 0]}>
@@ -676,23 +721,97 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
       <Wall pos={[ANN_CX, ROOM_H + 0.33, ANN_Z1 + 0.025]}
             size={[20.25, 0.04, 0.09]} mat={materials.windowWhiteFrame} />
 
-      {/* Inner West Facade (X = 33, facing driveway and Pedestrian Bridge) */}
-      {/* On 1F & 2F: Bridge portal at Z = 0..3; On Ground: Entrance portal at Z = 0..3 */}
-      {flIdx === 0 || flIdx === 1 || flIdx === 2 ? (
+      <Wall pos={[ANN_X0 - 0.02, ROOM_H + 0.15, 18]}
+            size={[0.08, 0.35, 52.2]} mat={materials.corniceBronze} />
+      <Wall pos={[ANN_X0 - 0.025, ROOM_H + 0.33, 18]}
+            size={[0.09, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
+
+      {/* ══════════════════════════════════════════════════════════
+          ANNEXURE INNER WEST CORRIDOR (X = 33, facing main block)
+          REAL ARCHITECTURE: Open-air colonnade corridor with polycarbonate
+          grid roof. Concrete columns every ~6m, low parapet on courtyard side.
+          Polycarbonate roof over corridor is ONLY on upper floors (1F-3F);
+          ground floor has the solid entrance portal.
+          ══════════════════════════════════════════════════════════ */}
+
+      {/* Structural columns along inner west facade at every 6m bay */}
+      {[-8, -2, 4, 10, 16, 22, 28, 34, 40, 44].map((cz, idx) => (
+        <mesh key={`ann-wcol-${idx}`}
+              position={[ANN_X0, ROOM_H / 2, cz]}
+              material={materials.exteriorWall}
+              castShadow receiveShadow>
+          <boxGeometry args={[0.45, ROOM_H + 0.1, 0.45]} />
+        </mesh>
+      ))}
+
+      {/* Continuous navy blue slab-edge beam along top of west colonnade */}
+      <mesh position={[ANN_X0 - 0.06, ROOM_H + 0.18, 18]} material={materials.columnNavyBlue}>
+        <boxGeometry args={[0.32, 0.36, 52.2]} />
+      </mesh>
+
+      {/* Ground floor: bridge/entrance portal Z=0..3 is open; rest solid */}
+      {isGround && (
         <>
-          {/* Wall South of portal: Z: -8 -> 0 */}
           <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, -4]}
                 size={[WALL_T, ROOM_H, 8]} mat={materials.exteriorWall} />
-          {/* Lintel Beam above portal: Z: 0 -> 3 */}
           <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H - 0.4, 1.5]}
                 size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
-          {/* Wall North of portal: Z: 3 -> 44 */}
           <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, 23.5]}
                 size={[WALL_T, ROOM_H, 41]} mat={materials.exteriorWall} />
         </>
-      ) : (
-        <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H / 2, 18]}
-              size={[WALL_T, ROOM_H, 52]} mat={materials.exteriorWall} />
+      )}
+
+      {/* Upper floors: open balustrade between columns */}
+      {!isGround && [
+        [-4, 6], [4, 6], [10, 6], [16, 6], [22, 6], [28, 6], [34, 6], [40, 4]
+      ].map(([czc, ww], idx) => (
+        <group key={`ann-wpar-${idx}`} position={[ANN_X0 + 0.05, 0, czc]}>
+          <mesh position={[0, 0.5, 0]} material={materials.exteriorWall}>
+            <boxGeometry args={[WALL_T, 1.0, ww - 0.5]} />
+          </mesh>
+          <mesh position={[0, 1.04, 0]} material={materials.columnNavyBlue}>
+            <boxGeometry args={[WALL_T + 0.04, 0.07, ww - 0.45]} />
+          </mesh>
+          <mesh position={[0, 1.2, 0]} material={materials.railingSteel}>
+            <boxGeometry args={[0.04, 0.05, ww - 0.5]} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Upper floors 1F-3F: polycarbonate grid roof over the 2m-wide inner corridor */}
+      {/* The corridor is between X=33 and X=35 (rooms start at X=35+) */}
+      {!isGround && (() => {
+        const corrW = 2.2;   // corridor slab width on inner side
+        const ribSpacing = 3.0;
+        const ribCount = Math.floor(52 / ribSpacing);
+        return (
+          <group position={[ANN_X0 + corrW / 2 + 0.05, ROOM_H + 0.02, 18]}>
+            {/* Polycarbonate translucent roof panels */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} material={materials.polycarbonateRoof} castShadow>
+              <planeGeometry args={[corrW, 52]} />
+            </mesh>
+            {/* Longitudinal steel purlins */}
+            {[0.5, -0.5].map((pz) => (
+              <mesh key={pz} position={[0, 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}
+                    material={materials.metalTrussGray}>
+                <boxGeometry args={[corrW + 0.1, 0.08, 0.06]} />
+              </mesh>
+            ))}
+            {/* Cross-ribs every 3m */}
+            {Array.from({ length: ribCount + 1 }).map((_, ri) => (
+              <mesh key={ri} position={[0, 0.04, -26 + ri * ribSpacing]}
+                    material={materials.metalTrussGray}>
+                <boxGeometry args={[corrW + 0.15, 0.06, 0.08]} />
+              </mesh>
+            ))}
+          </group>
+        );
+      })()}
+
+      {/* Bridge portal lintel on 1F and 2F (inner facade, Z=0..3) */}
+      {(flIdx === 1 || flIdx === 2) && (
+        <Wall pos={[ANN_X0 + WALL_T / 2, ROOM_H - 0.4, 1.5]}
+              size={[WALL_T + 0.04, 0.8, 3.0]} mat={materials.exteriorWall} />
       )}
 
       {/* Vertical PVC Downspouts on Annexure Inner Facade */}
@@ -704,11 +823,6 @@ const AnnexureFloor: React.FC<{ floorY: number; flIdx: number; grillTex: THREE.C
           ))}
         </group>
       ))}
-
-      <Wall pos={[ANN_X0 - 0.02, ROOM_H + 0.15, 18]}
-            size={[0.08, 0.35, 52.2]} mat={materials.corniceBronze} />
-      <Wall pos={[ANN_X0 - 0.025, ROOM_H + 0.33, 18]}
-            size={[0.09, 0.04, 52.25]} mat={materials.windowWhiteFrame} />
 
       {/* Outer East Facade (X = 53, campus outer edge) */}
       <Wall pos={[ANN_X1 - WALL_T / 2, ROOM_H / 2, 18]}
@@ -740,7 +854,7 @@ export const BuildingShell: React.FC = () => {
   const explodedView = useCampusStore((s) => s.explodedView);
   const grillTex = materials.windowGrillTexture;
 
-  const floorLevels = [0, 4.0, 8.0, 12.0, 16.0];
+  const floorLevels = [0, 4.0, 8.0, 12.0];
 
   return (
     <group>
@@ -752,8 +866,8 @@ export const BuildingShell: React.FC = () => {
         );
       })}
 
-      {/* ── Main Roof Slab & Rooftop Complex (Y = 20) ────────────────── */}
-      <group position={[0, explodedView ? 20 * 1.75 : 20, 0]}>
+      {/* ── Main Roof Slab & Rooftop Complex (Y = 16) ────────────────── */}
+      <group position={[0, explodedView ? 16.0 * 1.75 : 16.0, 0]}>
         {/* Main concrete roof slab */}
         <mesh position={[0, 0.2, 16]} material={materials.roofSlab} receiveShadow>
           <boxGeometry args={[42, 0.4, 48]} />
@@ -970,31 +1084,31 @@ export const BuildingShell: React.FC = () => {
       </group>
 
       {/* ── ═══ SIGNATURE ARCHITECTURAL END-CAPS (User Answer 2: on BOTH left and right sides) ═══ ── */}
-      {/* 5-story corner architectural feature framed in dark bronze with white moulding & terracotta cladding */}
+      {/* 4-story corner architectural feature framed in dark bronze with white moulding & terracotta cladding */}
       {[-21, 21].map((cx) => {
         const isWest = cx < 0;
         return (
           <group key={`endcap-${cx}`} position={[cx + (isWest ? -0.4 : 0.4), 0, MAIN_Z0 + 1.8]}>
             {/* Main vertical body in architectural dark bronze */}
-            <mesh position={[0, 10.75, 0]} material={materials.corniceBronze} castShadow receiveShadow>
-              <boxGeometry args={[1.3, 21.5, 3.8]} />
+            <mesh position={[0, 8.85, 0]} material={materials.corniceBronze} castShadow receiveShadow>
+              <boxGeometry args={[1.3, 17.7, 3.8]} />
             </mesh>
             {/* Vertical terracotta wood-slat accent panel */}
-            <mesh position={[isWest ? -0.7 : 0.7, 10.75, 0]} material={materials.terracottaAccent} castShadow>
-              <boxGeometry args={[0.2, 21.2, 3.4]} />
+            <mesh position={[isWest ? -0.7 : 0.7, 8.85, 0]} material={materials.terracottaAccent} castShadow>
+              <boxGeometry args={[0.2, 17.4, 3.4]} />
             </mesh>
             {/* White outer frame moulding perimeter */}
-            <mesh position={[isWest ? 0.5 : -0.5, 10.75, 0]}>
-              <boxGeometry args={[0.25, 20.6, 2.6]} />
+            <mesh position={[isWest ? 0.5 : -0.5, 8.85, 0]}>
+              <boxGeometry args={[0.25, 17.0, 2.6]} />
               <meshStandardMaterial color="#ffffff" roughness={0.35} />
             </mesh>
             {/* Reflective dark glass curtain with horizontal transoms */}
-            <mesh position={[isWest ? 0.62 : -0.62, 10.75, 0]}>
-              <boxGeometry args={[0.08, 20.0, 2.0]} />
+            <mesh position={[isWest ? 0.62 : -0.62, 8.85, 0]}>
+              <boxGeometry args={[0.08, 16.5, 2.0]} />
               <meshStandardMaterial color="#0f172a" roughness={0.12} metalness={0.88} />
             </mesh>
             {/* Horizontal transom framing bars */}
-            {[3.5, 7.5, 11.5, 15.5, 19.5].map((ty) => (
+            {[3.5, 7.5, 11.5, 15.5].map((ty) => (
               <mesh key={ty} position={[isWest ? 0.64 : -0.64, ty, 0]}>
                 <boxGeometry args={[0.09, 0.08, 2.02]} />
                 <meshStandardMaterial color="#ffffff" roughness={0.3} />
@@ -1003,39 +1117,6 @@ export const BuildingShell: React.FC = () => {
           </group>
         );
       })}
-
-      {/* ── ═══ HIGH BREEZEWAY GABLE CANOPY OVER ALLEYWAY (Photo 9.28.50 PM (2)) ═══ ── */}
-      {/* Spanning between roof parapets of Main (X = 21) and Annexure (X = 33) at Y = 16.5m */}
-      <group position={[27, explodedView ? 16.5 * 1.75 : 16.5, 4.0]}>
-        {/* Steel Gable Trusses */}
-        {[-3, 1, 5, 9].map((tz) => (
-          <group key={`truss-${tz}`} position={[0, 0, tz]}>
-            {/* Left rafter */}
-            <mesh position={[-3, 0.6, 0]} rotation={[0, 0, -0.2]} material={materials.metalTrussGray}>
-              <boxGeometry args={[6.3, 0.12, 0.12]} />
-            </mesh>
-            {/* Right rafter */}
-            <mesh position={[3, 0.6, 0]} rotation={[0, 0, 0.2]} material={materials.metalTrussGray}>
-              <boxGeometry args={[6.3, 0.12, 0.12]} />
-            </mesh>
-            {/* Bottom tie beam */}
-            <mesh position={[0, 0, 0]} material={materials.metalTrussGray}>
-              <boxGeometry args={[12.2, 0.14, 0.14]} />
-            </mesh>
-            {/* Center king post */}
-            <mesh position={[0, 0.6, 0]} material={materials.metalTrussGray}>
-              <boxGeometry args={[0.1, 1.2, 0.1]} />
-            </mesh>
-          </group>
-        ))}
-        {/* Corrugated Roof Sheets */}
-        <mesh position={[-3, 1.25, 3]} rotation={[0, 0, -0.2]} material={materials.metalTrussGray}>
-          <boxGeometry args={[6.5, 0.04, 14]} />
-        </mesh>
-        <mesh position={[3, 1.25, 3]} rotation={[0, 0, 0.2]} material={materials.metalTrussGray}>
-          <boxGeometry args={[6.5, 0.04, 14]} />
-        </mesh>
-      </group>
 
       {/* ── ═══ ENTRANCE FOYER INTERIOR APPOINTMENTS (Matching Real Photos) ═══ ── */}
       {/* Ground floor inside portal: X: -2.5 → 2.5, Z: -8 → -2 */}
@@ -1273,8 +1354,8 @@ export const BuildingShell: React.FC = () => {
         );
       })}
 
-      {/* ── Annexure Roof Slab & Parapet (Y = 20, Photo 1 Overhang) ────────────────── */}
-      <group position={[0, explodedView ? 20 * 1.75 : 20, 0]}>
+      {/* ── Annexure Roof Slab & Parapet (Y = 16, Photo 1 Overhang) ────────────────── */}
+      <group position={[0, explodedView ? 16.0 * 1.75 : 16.0, 0]}>
         <mesh position={[ANN_CX, 0.2, 18]} material={materials.roofSlab} receiveShadow>
           <boxGeometry args={[20, 0.4, 52]} />
         </mesh>
@@ -1301,12 +1382,38 @@ export const BuildingShell: React.FC = () => {
         <mesh position={[ANN_CX, 1.56, ANN_Z0 - WALL_T - 0.06]} material={materials.sunshadeNavyBlue}>
           <boxGeometry args={[20.35, 0.06, 0.18]} />
         </mesh>
-        {/* Annexure Central Light Court Opening Curb */}
+        {/* Annexure Central Light Court Opening Curb & Arched Steel Pergola Trellis (Photos 9.28.54 PM & 9.29.07 PM) */}
         <group position={[ANN_CX, 0.4, 19]}>
           <Wall pos={[0, 0.5, -6]} size={[3.4, 1.0, 0.2]} mat={materials.exteriorWall} />
           <Wall pos={[0, 0.5, 6]} size={[3.4, 1.0, 0.2]} mat={materials.exteriorWall} />
           <Wall pos={[-1.5, 0.5, 0]} size={[0.2, 1.0, 12]} mat={materials.exteriorWall} />
           <Wall pos={[1.5, 0.5, 0]} size={[0.2, 1.0, 12]} mat={materials.exteriorWall} />
+
+          {/* Arched steel pergola trellis frame over light court */}
+          <group position={[0, 1.0, 0]}>
+            {[-5.4, -3.6, -1.8, 0, 1.8, 3.6, 5.4].map((rz) => (
+              <group key={`tc-rib-${rz}`} position={[0, 0, rz]}>
+                {[-1.2, -0.6, 0, 0.6, 1.2].map((ax, segIdx) => {
+                  const archY = Math.cos((ax / 1.6) * (Math.PI / 2.5)) * 0.85;
+                  const rotZ = -(ax / 1.6) * 0.45;
+                  return (
+                    <mesh key={segIdx} position={[ax, archY, 0]} rotation={[0, 0, rotZ]} material={materials.metalTrussGray}>
+                      <boxGeometry args={[0.65, 0.05, 0.05]} />
+                    </mesh>
+                  );
+                })}
+              </group>
+            ))}
+            {/* 5 longitudinal steel purlin bars connecting the arches */}
+            {[-1.5, -0.75, 0, 0.75, 1.5].map((px) => {
+              const py = Math.cos((px / 1.6) * (Math.PI / 2.5)) * 0.85;
+              return (
+                <mesh key={`tc-purl-${px}`} position={[px, py + 0.03, 0]} material={materials.metalTrussGray}>
+                  <boxGeometry args={[0.04, 0.04, 11.2]} />
+                </mesh>
+              );
+            })}
+          </group>
         </group>
         {/* Strictly NO sign on Annexure roof — per master specification */}
       </group>

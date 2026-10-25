@@ -138,44 +138,67 @@ export const WalkController: React.FC = () => {
     let nextY = pos.current.y;
 
     // --- CONTINUOUS BIDIRECTIONAL STAIRCASE PHYSICS ---
-    // West Staircase (Main Block southwest corner): X ~ -15, Z in [0.4, 5.3]
-    // East Staircase (Main Block southeast corner): X ~ +15, Z in [0.4, 5.3]
-    // Annexure Staircase (Annexure Block west corridor): X ~ +45, Z in [0.4, 5.3]
-    const inWestStair = Math.abs(nextX - (-15)) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
-    const inEastStair = Math.abs(nextX - 15) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
-    const inAnnexStair = Math.abs(nextX - 45) < 1.35 && nextZ >= 0.4 && nextZ <= 5.3;
-    const onAnyStair = inWestStair || inEastStair || inAnnexStair;
+    // West Staircase (Main Block): X in [-16.5, -13.5], Z in [0.2, 5.0]
+    // East Staircase (Main Block): X in [13.5, 16.5], Z in [0.2, 5.0]
+    // Annexure Staircase: X in [37.5, 40.5], Z in [0.2, 5.6]
+    const inWestStair = Math.abs(nextX - (-15.0)) <= 1.5 && nextZ >= 0.2 && nextZ <= 5.0;
+    const inEastStair = Math.abs(nextX - 15.0) <= 1.5 && nextZ >= 0.2 && nextZ <= 5.0;
+    const inAnnexStair = Math.abs(nextX - 39.0) <= 1.5 && nextZ >= 0.2 && nextZ <= 5.6;
 
-    if (onAnyStair) {
-      // Determine base floor of the flight being climbed or descended
-      let flBaseY = 0.0;
-      if (pos.current.y < 3.7) {
-        // Ground to 1F flight
-        flBaseY = 0.0;
-      } else if (pos.current.y >= 3.7 && pos.current.y < 7.7) {
-        // Between 1F and 2F: If entering near top landing (Z > 2.5), descending to Ground; otherwise climbing to 2F
-        flBaseY = pos.current.z >= 2.5 && pos.current.y < 6.0 ? 0.0 : 4.0;
-      } else if (pos.current.y >= 7.7 && pos.current.y < 11.7) {
-        // Between 2F and 3F: If entering near top landing (Z > 2.5), descending to 1F; otherwise climbing to 3F
-        flBaseY = pos.current.z >= 2.5 && pos.current.y < 10.0 ? 4.0 : 8.0;
-      } else {
-        // 3F: Descending to 2F
-        flBaseY = 8.0;
-      }
-
-      // Calculate smooth target eye level along stair incline (Z: 0.5 to 4.5), with landings at ends
+    if (inEastStair || inWestStair) {
+      // Base floor level for current stair flight (0, 4.0, 8.0)
+      const curFlIdx = Math.min(2, Math.max(0, Math.floor((pos.current.y - 0.7) / 4.0)));
+      const flBaseY = curFlIdx * 4.0;
       let targetStairY = flBaseY + 1.7;
-      if (nextZ <= 0.5) {
-        targetStairY = flBaseY + 1.7;
-      } else if (nextZ >= 4.5) {
-        targetStairY = flBaseY + 4.0 + 1.7;
+
+      if (inEastStair) {
+        // Flight 1 (+Z): inner side (nextX < 15.0)
+        // Mid-Landing: Z in [3.5, 5.0]
+        // Flight 2 (-Z): outer side (nextX >= 15.0)
+        if (nextX < 15.0) {
+          if (nextZ >= 3.5) {
+            targetStairY = flBaseY + 3.7;
+          } else {
+            const prog = Math.max(0, Math.min(1, (nextZ - 0.5) / 3.0));
+            targetStairY = flBaseY + 1.7 + prog * 2.0;
+          }
+        } else {
+          if (nextZ >= 3.5) {
+            targetStairY = flBaseY + 3.7;
+          } else {
+            const prog2 = Math.max(0, Math.min(1, (3.5 - nextZ) / 3.0));
+            targetStairY = flBaseY + 3.7 + prog2 * 2.0;
+          }
+        }
       } else {
-        const prog = (nextZ - 0.5) / 4.0; // 0 to 1
-        targetStairY = flBaseY + prog * 4.0 + 1.7;
+        // West Stair: Flight 1 (+Z) is inner (nextX > -15.0), Flight 2 (-Z) is outer (nextX <= -15.0)
+        if (nextX > -15.0) {
+          if (nextZ >= 3.5) {
+            targetStairY = flBaseY + 3.7;
+          } else {
+            const prog = Math.max(0, Math.min(1, (nextZ - 0.5) / 3.0));
+            targetStairY = flBaseY + 1.7 + prog * 2.0;
+          }
+        } else {
+          if (nextZ >= 3.5) {
+            targetStairY = flBaseY + 3.7;
+          } else {
+            const prog2 = Math.max(0, Math.min(1, (3.5 - nextZ) / 3.0));
+            targetStairY = flBaseY + 3.7 + prog2 * 2.0;
+          }
+        }
       }
-      nextY = THREE.MathUtils.damp(pos.current.y, targetStairY, 18, delta);
+
+      nextY = THREE.MathUtils.damp(pos.current.y, targetStairY, 20, delta);
+    } else if (inAnnexStair) {
+      // Annexure Single Straight Flight (Z: 0.5 -> 5.3, rises 4.0m)
+      const curFlIdx = Math.min(2, Math.max(0, Math.floor((pos.current.y - 0.7) / 4.0)));
+      const flBaseY = curFlIdx * 4.0;
+      const prog = Math.max(0, Math.min(1, (nextZ - 0.5) / 4.8));
+      const targetStairY = flBaseY + 1.7 + prog * 4.0;
+      nextY = THREE.MathUtils.damp(pos.current.y, targetStairY, 20, delta);
     } else {
-      // Not on stairs: damp elevation to visitor's current floor level
+      // Not on stairs: clamp firmly to visitor's floor plane
       const nearestFlIdx = Math.min(3, Math.max(0, Math.round((pos.current.y - 1.7) / 4.0)));
       const floorTargetY = nearestFlIdx * 4.0 + 1.7;
       nextY = THREE.MathUtils.damp(pos.current.y, floorTargetY, 14, delta);
@@ -186,18 +209,34 @@ export const WalkController: React.FC = () => {
     if (inBlockGap) {
       if (pos.current.y < 3.0) {
         // Ground level: open landscaped passage / driveway outdoors between blocks — fully permitted!
-      } else if (pos.current.y >= 3.0 && pos.current.y < 11.5) {
-        // 1st Floor (Y ~ 5.7) or 2nd Floor (Y ~ 9.7): Must remain inside the bridge safety envelope (Z in [0.2, 2.8])
+      } else {
+        // Upper Floors (1F at Y~5.7, 2F at Y~9.7, 3F at Y~13.7): Must remain inside bridge corridor
         if (nextZ < 0.2 || nextZ > 2.8) {
           velocity.current.z = 0;
           return;
         }
         // Lock vertical height firmly to bridge deck eye-level
-        nextY = pos.current.y < 7.5 ? 5.7 : 9.7;
-      } else {
-        // 3rd Floor (Y > 11.5): No bridge exists on 3F — cannot walk off building edge into gap
-        velocity.current.x = 0;
-        return;
+        nextY = pos.current.y < 7.5 ? 5.7 : pos.current.y < 11.5 ? 9.7 : 13.7;
+      }
+    }
+
+    // --- RIGID BUILDING EXTERIOR BOUNDARY COLLISION ---
+    if (pos.current.y >= 3.0) {
+      // Upper floor perimeter walls of Main Block
+      if (nextX >= -21.2 && nextX <= 21.2 && nextZ >= -8.2 && nextZ <= 40.2) {
+        if (nextX <= -20.8) { velocity.current.x = 0; return; }
+        if (nextZ <= -7.8)  { velocity.current.z = 0; return; }
+        if (nextZ >= 39.8)  { velocity.current.z = 0; return; }
+        // East wall has bridge opening at Z in [0.2, 2.8]
+        if (nextX >= 20.8 && (nextZ < 0.2 || nextZ > 2.8)) { velocity.current.x = 0; return; }
+      }
+      // Upper floor perimeter walls of Annexure Block
+      if (nextX >= 32.8 && nextX <= 53.2 && nextZ >= -8.2 && nextZ <= 44.2) {
+        if (nextX >= 52.8)  { velocity.current.x = 0; return; }
+        if (nextZ <= -7.8)  { velocity.current.z = 0; return; }
+        if (nextZ >= 43.8)  { velocity.current.z = 0; return; }
+        // West wall has bridge opening at Z in [0.2, 2.8]
+        if (nextX <= 33.2 && (nextZ < 0.2 || nextZ > 2.8)) { velocity.current.x = 0; return; }
       }
     }
 

@@ -6,7 +6,7 @@ import { useCampusStore } from '../../store/useCampusStore';
 export const presentationWaypoints = [
   {
     title: "1. Campus Approach & St. Paul's Block Facade",
-    subtitle: "Main entrance portico showing 5-story exterior architecture, maroon department pediment, and 'ST. PAUL'S BLOCK' rooftop signage.",
+    subtitle: "Main entrance portico showing 4-storey exterior architecture, maroon department pediment, and 'ST. PAUL'S BLOCK' rooftop signage.",
     camPos: [0, 5.5, -30] as [number, number, number],
     lookAt: [0, 8.0, -8] as [number, number, number]
   },
@@ -42,7 +42,7 @@ export const presentationWaypoints = [
   },
   {
     title: '7. Campus Bird’s-Eye Overview',
-    subtitle: 'Unified architectural perspective matching 3D isometric overview showing both 5-story blocks, rooftop solar arrays, cruciform tile walkway, and arched blue connecting corridor.',
+    subtitle: 'Unified architectural perspective matching 3D isometric overview showing both 4-storey collegiate blocks, rooftop solar arrays, cruciform tile walkway, and arched blue connecting corridor.',
     camPos: [18, 48.0, -54] as [number, number, number],
     lookAt: [16, 10.0, 16] as [number, number, number]
   }
