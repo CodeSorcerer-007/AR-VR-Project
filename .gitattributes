@@ -1,0 +1,16 @@
+# Set default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Unity YAML files (Scene, Prefabs, Asset files)
+*.unity text merge=unityyamlmerge
+*.prefab text merge=unityyamlmerge
+*.asset text merge=unityyamlmerge
+*.meta text merge=unityyamlmerge
+
+# C# scripts & text code
+*.cs text diff=csharp eol=lf
+*.cginc text eol=lf
+*.shader text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.bat text eol=crlf
